@@ -1,0 +1,268 @@
+[
+  {
+    "id": "ch1",
+    "title": "First Day Together",
+    "type": "care",
+    "scene": "home",
+    "intro": "Today your pet comes home. Nothing here can be lost or failed — just be there.",
+    "goals": [
+      {
+        "id": "g_feed",
+        "type": "action",
+        "key": "feed",
+        "target": 2,
+        "text": "Share 2 meals"
+      },
+      {
+        "id": "g_bath",
+        "type": "action",
+        "key": "bathe",
+        "target": 1,
+        "text": "Give a warm bath"
+      },
+      {
+        "id": "g_play",
+        "type": "action",
+        "key": "play",
+        "target": 2,
+        "text": "Play together twice"
+      },
+      {
+        "id": "g_sleep",
+        "type": "action",
+        "key": "sleep",
+        "target": 1,
+        "text": "Tuck them in for a nap"
+      }
+    ],
+    "reward": {
+      "coins": 200,
+      "gems": 3,
+      "badge": "first_day"
+    }
+  },
+  {
+    "id": "ch2",
+    "title": "Growing Up",
+    "type": "care",
+    "scene": "home",
+    "intro": "Little paws get bigger. Keep the bond steady and watch them change.",
+    "goals": [
+      {
+        "id": "g_bond30",
+        "type": "bond",
+        "target": 30,
+        "text": "Reach a bond of 30"
+      },
+      {
+        "id": "g_stage",
+        "type": "stage",
+        "target": 1,
+        "text": "Help your pet grow to Kid stage"
+      },
+      {
+        "id": "g_care10",
+        "type": "care_total",
+        "target": 12,
+        "text": "Complete 12 care moments"
+      }
+    ],
+    "reward": {
+      "coins": 300,
+      "gems": 4,
+      "badge": "growing_up"
+    }
+  },
+  {
+    "id": "ch3",
+    "title": "Healthy & Beautiful",
+    "type": "care",
+    "scene": "home",
+    "intro": "A checkup, a brush, and a very good outfit. Your pet is ready for the world.",
+    "goals": [
+      {
+        "id": "g_brush",
+        "type": "action",
+        "key": "brush",
+        "target": 3,
+        "text": "Brush that coat 3 times"
+      },
+      {
+        "id": "g_vet",
+        "type": "action",
+        "key": "heal",
+        "target": 1,
+        "text": "Visit the vet for a checkup"
+      },
+      {
+        "id": "g_dress",
+        "type": "equip",
+        "target": 1,
+        "text": "Dress up your pet or yourself"
+      },
+      {
+        "id": "g_bond60",
+        "type": "bond",
+        "target": 60,
+        "text": "Reach a bond of 60"
+      }
+    ],
+    "reward": {
+      "coins": 400,
+      "gems": 5,
+      "badge": "glow_up"
+    }
+  },
+  {
+    "id": "ch4",
+    "title": "Cozy Alley",
+    "type": "rescue",
+    "scene": "mall",
+    "intro": "Behind the shopping street, three small voices are asking for help.",
+    "goals": [
+      {
+        "id": "r_hamster",
+        "type": "rescue",
+        "key": "hamster",
+        "text": "Rescue the Peach Hamster"
+      },
+      {
+        "id": "r_pom",
+        "type": "rescue",
+        "key": "pomeranian",
+        "text": "Rescue the Cloud Pomeranian"
+      },
+      {
+        "id": "r_tiel",
+        "type": "rescue",
+        "key": "cockatiel",
+        "text": "Rescue the Lemon Cockatiel"
+      },
+      {
+        "id": "h_alley",
+        "type": "homed",
+        "target": 1,
+        "text": "Find a forever friend for 1 rescue"
+      }
+    ],
+    "reward": {
+      "coins": 500,
+      "gems": 6,
+      "badge": "alley_angel"
+    }
+  },
+  {
+    "id": "ch5",
+    "title": "Bloom Meadow",
+    "type": "rescue",
+    "scene": "meadow",
+    "intro": "Wildflowers up to your knees, and someone hiding in every one of them.",
+    "goals": [
+      {
+        "id": "r_hedge",
+        "type": "rescue",
+        "key": "hedgehog",
+        "text": "Rescue the Mochi Hedgehog"
+      },
+      {
+        "id": "r_duck",
+        "type": "rescue",
+        "key": "duckling",
+        "text": "Rescue the Butter Duckling"
+      },
+      {
+        "id": "r_fawn",
+        "type": "rescue",
+        "key": "fawn",
+        "text": "Rescue the Dapple Fawn"
+      },
+      {
+        "id": "h_meadow",
+        "type": "homed",
+        "target": 3,
+        "text": "Find forever friends for 3 rescues"
+      }
+    ],
+    "reward": {
+      "coins": 650,
+      "gems": 7,
+      "badge": "meadow_keeper"
+    }
+  },
+  {
+    "id": "ch6",
+    "title": "Misty Forest",
+    "type": "rescue",
+    "scene": "forest",
+    "intro": "The fog is thick and the forest is shy. Move slowly and it will show you who lives here.",
+    "goals": [
+      {
+        "id": "r_panda",
+        "type": "rescue",
+        "key": "red_panda",
+        "text": "Rescue the Ember Red Panda"
+      },
+      {
+        "id": "r_fennec",
+        "type": "rescue",
+        "key": "fennec",
+        "text": "Rescue the Dune Fennec"
+      },
+      {
+        "id": "r_shiba",
+        "type": "rescue",
+        "key": "shiba",
+        "text": "Rescue the Sesame Shiba"
+      },
+      {
+        "id": "h_forest",
+        "type": "homed",
+        "target": 5,
+        "text": "Find forever friends for 5 rescues"
+      }
+    ],
+    "reward": {
+      "coins": 800,
+      "gems": 8,
+      "badge": "forest_friend"
+    }
+  },
+  {
+    "id": "ch7",
+    "title": "Frost Bay",
+    "type": "rescue",
+    "scene": "bay",
+    "intro": "The last stretch of coast, cold and bright. The rarest hearts live here.",
+    "goals": [
+      {
+        "id": "r_peng",
+        "type": "rescue",
+        "key": "penguin_chick",
+        "text": "Rescue the Pebble Penguin"
+      },
+      {
+        "id": "r_otter",
+        "type": "rescue",
+        "key": "sea_otter",
+        "text": "Rescue the Kelp Otter"
+      },
+      {
+        "id": "r_snow",
+        "type": "rescue",
+        "key": "snow_fox",
+        "text": "Rescue the Frost Fox"
+      },
+      {
+        "id": "h_bay",
+        "type": "homed",
+        "target": 8,
+        "text": "Find forever friends for 8 rescues"
+      }
+    ],
+    "reward": {
+      "coins": 1000,
+      "gems": 12,
+      "badge": "bay_guardian"
+    }
+  }
+]

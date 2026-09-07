@@ -1,0 +1,138 @@
+{
+  "food": {
+    "fish_snack": {
+      "name": "Fish Snack",
+      "icon": "fish",
+      "price": 20,
+      "food": 34,
+      "mood": 6,
+      "color": "#9fc6e0"
+    },
+    "milk_bone": {
+      "name": "Milk Bone",
+      "icon": "bone",
+      "price": 20,
+      "food": 34,
+      "mood": 6,
+      "color": "#f0dcc0"
+    },
+    "carrot_cake": {
+      "name": "Carrot Cake",
+      "icon": "cake",
+      "price": 25,
+      "food": 30,
+      "mood": 12,
+      "color": "#f3b98a"
+    },
+    "seed_mix": {
+      "name": "Seed Mix",
+      "icon": "seed",
+      "price": 15,
+      "food": 28,
+      "mood": 4,
+      "color": "#e8cf92"
+    },
+    "berry_bowl": {
+      "name": "Berry Bowl",
+      "icon": "berry",
+      "price": 25,
+      "food": 30,
+      "mood": 10,
+      "color": "#e2a0b4"
+    },
+    "bamboo_roll": {
+      "name": "Bamboo Roll",
+      "icon": "leaf",
+      "price": 25,
+      "food": 32,
+      "mood": 8,
+      "color": "#b6d3a8"
+    }
+  },
+  "outfit": {
+    "outfit_default": {
+      "name": "Cream Sweater",
+      "price": 0,
+      "color": "#F6EAD9",
+      "owned": true
+    },
+    "outfit_sakura": {
+      "name": "Sakura Dress",
+      "price": 320,
+      "color": "#F7C6CE"
+    },
+    "outfit_mint": {
+      "name": "Mint Overalls",
+      "price": 320,
+      "color": "#BFE0CE"
+    },
+    "outfit_cocoa": {
+      "name": "Cocoa Cardigan",
+      "price": 480,
+      "color": "#C7A489"
+    },
+    "outfit_star": {
+      "name": "Starlight Coat",
+      "price": 40,
+      "currency": "gems",
+      "color": "#B9C7EE"
+    }
+  },
+  "accessory": {
+    "acc_none": {
+      "name": "No Accessory",
+      "price": 0,
+      "color": "#00000000",
+      "owned": true
+    },
+    "acc_bow": {
+      "name": "Pink Bow",
+      "price": 180,
+      "color": "#F4A3B4"
+    },
+    "acc_scarf": {
+      "name": "Cozy Scarf",
+      "price": 220,
+      "color": "#E4B893"
+    },
+    "acc_flower": {
+      "name": "Daisy Crown",
+      "price": 260,
+      "color": "#FBEFA8"
+    },
+    "acc_bell": {
+      "name": "Golden Bell",
+      "price": 30,
+      "currency": "gems",
+      "color": "#F2C761"
+    }
+  },
+  "decor": {
+    "decor_default": {
+      "name": "Warm Apartment",
+      "price": 0,
+      "sky": "#FBF1E4",
+      "floor": "#EFE0CC",
+      "owned": true
+    },
+    "decor_pastel": {
+      "name": "Pastel Loft",
+      "price": 400,
+      "sky": "#FBEAF0",
+      "floor": "#F0DCE4"
+    },
+    "decor_garden": {
+      "name": "Garden Room",
+      "price": 520,
+      "sky": "#EAF4E9",
+      "floor": "#DCEAD8"
+    },
+    "decor_night": {
+      "name": "Moonlit Studio",
+      "price": 60,
+      "currency": "gems",
+      "sky": "#DCE1F2",
+      "floor": "#C9CFE6"
+    }
+  }
+}

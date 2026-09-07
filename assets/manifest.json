@@ -1,0 +1,34 @@
+{
+  "_comment": "Drop artwork into res://assets and describe it here. Anything missing falls back to a hand-drawn placeholder, so the game always runs. Sheet cells are counted left-to-right, top-to-bottom, starting at 0.",
+
+  "images": {
+    "bg_home": "res://assets/bg/home.png",
+    "bg_mall": "res://assets/bg/mall.png",
+    "bg_meadow": "res://assets/bg/meadow.png",
+    "bg_forest": "res://assets/bg/forest.png",
+    "bg_bay": "res://assets/bg/bay.png",
+    "owner_portrait": "res://assets/owner/portrait.png"
+  },
+
+  "sheets": {
+    "owner": {
+      "path": "res://assets/owner/owner_sheet.png",
+      "cols": 5, "rows": 3,
+      "poses": {
+        "idle": 0, "hug": 1, "drink": 2, "cheer": 3, "walk": 4,
+        "read": 5, "think": 6, "sleep": 7, "laptop": 8, "wink": 9,
+        "side": 10, "camera": 11, "pet": 12, "point": 13, "flowers": 14
+      }
+    },
+    "ragdoll": {
+      "path": "res://assets/pets/ragdoll_sheet.png",
+      "cols": 6, "rows": 4,
+      "poses": {
+        "idle": 0, "happy": 1, "walk": 2, "peek": 3, "wave": 4, "away": 5,
+        "sleep": 6, "eat": 7, "belly": 8, "dressed": 9, "loaf": 10, "curious": 11,
+        "box": 12, "curl": 13, "play": 14, "wink": 15, "proud": 16, "love": 17,
+        "crown": 18, "bow": 19, "roll": 20, "hood": 21, "bed": 22, "back": 23
+      }
+    }
+  }
+}

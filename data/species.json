@@ -1,0 +1,126 @@
+{
+  "ragdoll": {
+    "name": "Ragdoll Cat", "kind": "Cat", "starter": true, "rarity": "starter",
+    "body": "#F2E4D6", "accent": "#9C8574", "region": "home",
+    "traits": ["Cuddly", "Calm", "Sleepy"],
+    "favorite": "fish_snack",
+    "bio": "A cloud with paws. Goes limp the moment you pick them up, and purrs like a tiny engine.",
+    "hint": "Ragdolls love long naps and slow brushing."
+  },
+  "corgi": {
+    "name": "Corgi", "kind": "Dog", "starter": true, "rarity": "starter",
+    "body": "#F4C98A", "accent": "#FFFFFF", "region": "home",
+    "traits": ["Playful", "Loyal", "Sunny"],
+    "favorite": "milk_bone",
+    "bio": "Short legs, enormous heart. Will follow you from room to room forever.",
+    "hint": "Corgis need lots of play or they get restless."
+  },
+  "lop_bunny": {
+    "name": "Holland Lop", "kind": "Bunny", "starter": true, "rarity": "starter",
+    "body": "#F6E3DE", "accent": "#D4A79B", "region": "home",
+    "traits": ["Shy", "Gentle", "Curious"],
+    "favorite": "carrot_cake",
+    "bio": "Soft ears that flop like ribbons. Thumps twice when happy.",
+    "hint": "Bunnies calm down fastest with quiet grooming."
+  },
+
+  "hamster": {
+    "name": "Peach Hamster", "kind": "Hamster", "rarity": "common", "region": "alley",
+    "body": "#F7D6BC", "accent": "#FFF3E6",
+    "traits": ["Curious", "Tidy", "Sunny"],
+    "favorite": "seed_mix",
+    "bio": "Found stuffing an entire dinner into both cheeks behind the bakery.",
+    "hint": "Offer food first — trust follows the snack."
+  },
+  "pomeranian": {
+    "name": "Cloud Pomeranian", "kind": "Dog", "rarity": "common", "region": "alley",
+    "body": "#FBEBD2", "accent": "#E3B98C",
+    "traits": ["Playful", "Proud", "Loud"],
+    "favorite": "milk_bone",
+    "bio": "A walking pompom who believes they are a very large wolf.",
+    "hint": "Play, then brush. Poms adore being admired."
+  },
+  "cockatiel": {
+    "name": "Lemon Cockatiel", "kind": "Bird", "rarity": "rare", "region": "alley",
+    "body": "#FBE49C", "accent": "#F2A0A0",
+    "traits": ["Chatty", "Curious", "Musical"],
+    "favorite": "seed_mix",
+    "bio": "Whistles the same four notes until you whistle them back.",
+    "hint": "Birds warm up through play and gentle talking."
+  },
+
+  "hedgehog": {
+    "name": "Mochi Hedgehog", "kind": "Hedgehog", "rarity": "common", "region": "meadow",
+    "body": "#D8C3AE", "accent": "#F6E0D5",
+    "traits": ["Shy", "Tidy", "Gentle"],
+    "favorite": "berry_bowl",
+    "bio": "Curls into a perfect ball at the first sound, then peeks out one eye.",
+    "hint": "Be patient. Warmth before touching."
+  },
+  "duckling": {
+    "name": "Butter Duckling", "kind": "Duck", "rarity": "common", "region": "meadow",
+    "body": "#FBE08A", "accent": "#F0A65A",
+    "traits": ["Sunny", "Loyal", "Silly"],
+    "favorite": "seed_mix",
+    "bio": "Decided you were family approximately three seconds after meeting you.",
+    "hint": "Ducklings just need company and clean water."
+  },
+  "fawn": {
+    "name": "Dapple Fawn", "kind": "Deer", "rarity": "rare", "region": "meadow",
+    "body": "#DDB18C", "accent": "#FFF6EA",
+    "traits": ["Shy", "Graceful", "Gentle"],
+    "favorite": "berry_bowl",
+    "bio": "Waited by the meadow fence for three days before letting you close.",
+    "hint": "Never rush a fawn. Soothe, then feed."
+  },
+
+  "red_panda": {
+    "name": "Ember Red Panda", "kind": "Red Panda", "rarity": "rare", "region": "forest",
+    "body": "#D98457", "accent": "#FBEDE2",
+    "traits": ["Sleepy", "Curious", "Clever"],
+    "favorite": "bamboo_roll",
+    "bio": "Sleeps draped over a branch like a warm scarf someone forgot.",
+    "hint": "Let them nap first, then play."
+  },
+  "fennec": {
+    "name": "Dune Fennec", "kind": "Fox", "rarity": "rare", "region": "forest",
+    "body": "#F5DFB8", "accent": "#E5B98A",
+    "traits": ["Clever", "Playful", "Alert"],
+    "favorite": "fish_snack",
+    "bio": "Enormous ears hear you opening a snack from two rooms away.",
+    "hint": "Fennecs trust whoever plays the best games."
+  },
+  "shiba": {
+    "name": "Sesame Shiba", "kind": "Dog", "rarity": "rare", "region": "forest",
+    "body": "#E8B583", "accent": "#FFFFFF",
+    "traits": ["Proud", "Loyal", "Clever"],
+    "favorite": "milk_bone",
+    "bio": "Pretends not to need you, then sits precisely on your feet.",
+    "hint": "Shibas warm up slowly. Consistency wins."
+  },
+
+  "penguin_chick": {
+    "name": "Pebble Penguin", "kind": "Penguin", "rarity": "epic", "region": "bay",
+    "body": "#C8D4E3", "accent": "#FBFBFB",
+    "traits": ["Silly", "Loyal", "Brave"],
+    "favorite": "fish_snack",
+    "bio": "Brings you a small smooth pebble every single morning.",
+    "hint": "Keep them cool, keep them fed, keep them close."
+  },
+  "sea_otter": {
+    "name": "Kelp Otter", "kind": "Otter", "rarity": "epic", "region": "bay",
+    "body": "#B99B84", "accent": "#F3E5D8",
+    "traits": ["Playful", "Clever", "Cuddly"],
+    "favorite": "fish_snack",
+    "bio": "Holds your hand while sleeping so you do not drift away.",
+    "hint": "Otters need play and very clean water."
+  },
+  "snow_fox": {
+    "name": "Frost Fox", "kind": "Fox", "rarity": "legendary", "region": "bay",
+    "body": "#EFF3F7", "accent": "#C6D6E6",
+    "traits": ["Graceful", "Shy", "Brave"],
+    "favorite": "berry_bowl",
+    "bio": "Appears only in the quietest snowfall, and only for someone patient.",
+    "hint": "The rarest friend asks for the most patience."
+  }
+}
