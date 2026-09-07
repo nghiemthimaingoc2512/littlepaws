@@ -9,3 +9,7 @@ export_presets.cfg
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Web build
+web/node_modules/
+web/dist/

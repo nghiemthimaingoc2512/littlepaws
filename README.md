@@ -11,20 +11,39 @@ Built with **Godot 4.4** and GDScript. Portrait-friendly landscape layout at
 
 ## Run it
 
+**In a browser** — the quickest way to play:
+
+```bash
+cd web && npm install && npm run dev     # http://localhost:5173
+```
+
+**As a native build** — for Android, iOS and desktop:
+
 1. Install [Godot 4.4](https://godotengine.org/download) (standard build, no C#).
 2. Open the Godot project manager, click **Import**, pick this folder's
    `project.godot`, then **Run** (F5).
 
-No dependencies, no build step, no asset pipeline. It runs the moment it opens.
+Both targets read the same content from `data/*.json` and follow the same rules;
+`web/src/state.js` is a port of `autoload/GameState.gd`. See
+[web/README.md](web/README.md) for the web build.
 
 ## Run the tests
 
 ```bash
-godot --headless --path . --import                  # first time only
-godot --headless --path . res://tests/SmokeTest.tscn # 74 rule checks
+cd web && npm run dev &                               # the browser suite needs it running
+cd web && npm run test                                # 66 interaction checks in Chromium
+
+godot --headless --path . --import                    # first time only
+godot --headless --path . res://tests/SmokeTest.tscn   # 102 rule checks
 ```
 
-The smoke test drives a full playthrough — new game, care, growth stages,
+The browser suite plays the game for real: it finishes onboarding, opens and
+closes the care sheet, feeds and plays and checks the meters moved, collects a
+daily task, visits every tab, buys and wears an accessory, completes a rescue,
+tames and re-homes the animal, collects a gift from the inbox, and reloads to
+confirm the save survived.
+
+The Godot smoke test drives a full playthrough — new game, care, growth stages,
 chapter completion, rescue, taming, homing, purchases, rewarded video, a month
 of absence, and a save/load round trip — and exits non-zero if any rule breaks.
 CI runs it on every push.
