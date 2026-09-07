@@ -53,7 +53,9 @@ covers Android and iOS. Add it as an addon, initialise it once in
 Not wired up. The natural products, in order of how well they fit the game:
 
 1. **Remove ads** — one purchase, keeps the free-coins button paying out.
-2. **Gem packs** — gems already buy the premium cosmetic in each category.
+2. **Gem packs** — gems already buy the premium cosmetic in each category. The
+   `+` on each currency bar is the natural entry point: coins open a rewarded
+   video, gems open the shop, hearts explain where hearts come from.
 3. **Cosmetic bundles** — seasonal outfit + accessory + decor sets. Adding one
    is a `data/items.json` edit, no code.
 

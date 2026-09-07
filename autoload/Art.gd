@@ -5,16 +5,21 @@ extends Node
 ## has not been dropped into res://assets yet, Art returns null and the widget
 ## falls back to a hand-drawn placeholder, so the game is always playable.
 
-const CREAM := Color("fdf6ec")
-const CREAM_DEEP := Color("f6e7d4")
-const INK := Color("5b4636")
-const INK_SOFT := Color("8b7462")
-const PINK := Color("f4b9bc")
-const PINK_DEEP := Color("e4919a")
-const SAGE := Color("bfd8c4")
-const SKY := Color("bcd0e8")
-const GOLD := Color("f2c761")
-const WHITE := Color("fffcf7")
+const CREAM := Color("fdf6ea")        # cards and panels
+const CREAM_DEEP := Color("f5e5cd")   # walls, inactive fills
+const WOOD := Color("e8d2ac")         # floor
+const INK := Color("6b4a32")          # primary text
+const INK_SOFT := Color("a08265")     # secondary text
+const BROWN := Color("64473a")        # currency bar
+const GREEN := Color("7fbf4d")        # add buttons
+const SAGE := Color("a8cc8c")         # sofa green, success
+const GOLD := Color("f2c14e")         # coins, primary call to action
+const GOLD_SOFT := Color("fbdf94")    # active tab fill
+const SKY := Color("7fb2e5")          # gems
+const RED := Color("e8626f")          # hearts, notification dots
+const PINK := Color("f2a9b4")
+const PINK_DEEP := Color("d9808f")
+const WHITE := Color("fffdf7")
 
 const STAT_COLORS := {
 	"food": Color("f0a86a"),
@@ -25,11 +30,11 @@ const STAT_COLORS := {
 }
 
 const RARITY_COLORS := {
-	"starter": Color("f4b9bc"),
-	"common": Color("bfd8c4"),
-	"rare": Color("bcd0e8"),
-	"epic": Color("d2b8e8"),
-	"legendary": Color("f2c761"),
+	"starter": Color("f2a9b4"),
+	"common": Color("a8cc8c"),
+	"rare": Color("7fb2e5"),
+	"epic": Color("c9a9e0"),
+	"legendary": Color("f2c14e"),
 }
 
 var manifest: Dictionary = {}
@@ -108,6 +113,10 @@ func creature(species_id: String, pose_name: String = "idle") -> Texture2D:
 	var tex := pose(species_id, pose_name)
 	if tex != null:
 		return tex
+	# A species can ship a second sheet; the primary one wins when both exist.
+	tex = pose(species_id + "_classic", pose_name)
+	if tex != null:
+		return tex
 	tex = _load("res://assets/pets/%s_%s.png" % [species_id, pose_name])
 	if tex != null:
 		return tex
@@ -151,6 +160,8 @@ func build_theme() -> Theme:
 	theme.default_font_size = 18
 
 	var normal := panel_box(WHITE, 20)
+	normal.border_color = CREAM_DEEP
+	normal.set_border_width_all(2)
 	normal.content_margin_left = 18
 	normal.content_margin_right = 18
 	normal.content_margin_top = 12
@@ -160,10 +171,10 @@ func build_theme() -> Theme:
 	normal.shadow_offset = Vector2(0, 3)
 
 	var hover := normal.duplicate() as StyleBoxFlat
-	hover.bg_color = CREAM_DEEP
+	hover.bg_color = CREAM
 
 	var pressed := normal.duplicate() as StyleBoxFlat
-	pressed.bg_color = PINK
+	pressed.bg_color = GOLD_SOFT
 	pressed.shadow_size = 2
 
 	var disabled := normal.duplicate() as StyleBoxFlat

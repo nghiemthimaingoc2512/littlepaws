@@ -74,6 +74,18 @@ const TAME_ACTIONS := {
 	"tame_play": {"label": "Play", "trust": 16, "cooldown": 6.0, "line": "%s bats at the ribbon and forgets to be afraid."},
 }
 
+## The five things the To Do card asks for each day.
+const DAILY_TASKS := [
+	{"id": "t_care", "label": "Pet care", "track": "care", "target": 3, "coins": 60},
+	{"id": "t_play", "label": "Play time", "track": "play", "target": 1, "coins": 50},
+	{"id": "t_decorate", "label": "Decorate", "track": "decorate", "target": 1, "coins": 50},
+	{"id": "t_friends", "label": "Meet friends", "track": "friends", "target": 1, "coins": 60},
+	{"id": "t_happy", "label": "Be happy!", "track": "happy", "target": 1, "coins": 80},
+]
+## Clearing the whole list pays this on top of the individual rewards.
+const DAILY_CLEAR_HEARTS := 1
+const DAILY_CLEAR_GEMS := 2
+
 const AD_REWARD_COINS := 60
 const AD_COOLDOWN_SEC := 90.0
 const AD_DAILY_LIMIT := 12
@@ -161,7 +173,7 @@ func new_game(species_id: String, pet_name: String, owner_name: String) -> void:
 			"accessory": "acc_none",
 			"stats": {"food": 45.0, "clean": 40.0, "energy": 55.0, "mood": 50.0, "health": 92.0},
 		},
-		"wallet": {"coins": 350, "gems": 5},
+		"wallet": {"coins": 350, "gems": 5, "hearts": 3},
 		"inventory": {"fish_snack": 4, "milk_bone": 4, "seed_mix": 4},
 		"owned": Data.default_owned(),
 		"decor": "decor_default",
@@ -174,6 +186,9 @@ func new_game(species_id: String, pet_name: String, owner_name: String) -> void:
 		"daily": {"date": _today(), "streak": 1},
 		"ads": {"date": _today(), "count": 0, "last": 0},
 		"cooldowns": {},
+		"tasks": {"date": _today(), "progress": {}, "claimed": []},
+		"mail": [],
+		"seen": {},
 	}
 	_loaded = true
 	save_game()
@@ -187,10 +202,15 @@ func _migrate() -> void:
 		"owned": Data.default_owned(), "decor": "decor_default", "chapter": 0,
 		"daily": {"date": _today(), "streak": 1},
 		"ads": {"date": _today(), "count": 0, "last": 0},
+		"tasks": {"date": _today(), "progress": {}, "claimed": []},
+		"mail": [], "seen": {},
 	}
 	for key: String in defaults.keys():
 		if not save.has(key):
 			save[key] = defaults[key]
+	var wallet: Dictionary = save.get("wallet", {})
+	if not wallet.has("hearts"):
+		wallet["hearts"] = 3
 	var stats: Dictionary = pet().get("stats", {})
 	for key: String in STAT_KEYS:
 		if not stats.has(key):
@@ -225,6 +245,31 @@ func coins() -> int:
 
 func gems() -> int:
 	return int(save.get("wallet", {}).get("gems", 0))
+
+
+func hearts() -> int:
+	return int(save.get("wallet", {}).get("hearts", 0))
+
+
+## The player's own level, separate from the pet's growth. It rises from every
+## kind of progress, so the header always reflects the whole journey.
+func player_xp() -> int:
+	return counter("player_xp")
+
+
+func player_level_info() -> Dictionary:
+	var remaining := player_xp()
+	var level := 1
+	var need := 100
+	while remaining >= need and level < 99:
+		remaining -= need
+		level += 1
+		need = 100 + (level - 1) * 60
+	return {"level": level, "into": remaining, "need": need}
+
+
+func player_level() -> int:
+	return int(player_level_info()["level"])
 
 
 func stat(key: String) -> float:
@@ -404,6 +449,10 @@ func do_care(action_id: String) -> bool:
 
 	_bump("care_total")
 	_bump(action_id)
+	_bump("player_xp", 5)
+	_task_bump("care")
+	if action_id == "play":
+		_task_bump("play")
 	_advance_goals("action", action_id)
 	_advance_goals("care_total", "")
 
@@ -436,6 +485,16 @@ func add_gems(amount: int) -> void:
 	wallet["gems"] = int(wallet.get("gems", 0)) + amount
 
 
+func add_hearts(amount: int) -> void:
+	var wallet: Dictionary = save["wallet"]
+	wallet["hearts"] = int(wallet.get("hearts", 0)) + amount
+
+
+func _spend_hearts(amount: int) -> void:
+	var wallet: Dictionary = save["wallet"]
+	wallet["hearts"] = maxi(0, int(wallet.get("hearts", 0)) - amount)
+
+
 func _spend_coins(amount: int) -> void:
 	var wallet: Dictionary = save["wallet"]
 	wallet["coins"] = maxi(0, int(wallet.get("coins", 0)) - amount)
@@ -447,7 +506,10 @@ func _spend_gems(amount: int) -> void:
 
 
 func can_afford(price: int, currency: String) -> bool:
-	return gems() >= price if currency == "gems" else coins() >= price
+	match currency:
+		"gems": return gems() >= price
+		"hearts": return hearts() >= price
+	return coins() >= price
 
 
 func buy(category: String, item_id: String) -> bool:
@@ -459,10 +521,10 @@ func buy(category: String, item_id: String) -> bool:
 	if not can_afford(price, currency):
 		toast.emit("Not enough %s yet." % currency)
 		return false
-	if currency == "gems":
-		_spend_gems(price)
-	else:
-		_spend_coins(price)
+	match currency:
+		"gems": _spend_gems(price)
+		"hearts": _spend_hearts(price)
+		_: _spend_coins(price)
 	(save["owned"] as Array).append(item_id)
 	toast.emit("%s is yours." % String(item.get("name", item_id)))
 	_after_change()
@@ -503,6 +565,7 @@ func equip(item_id: String) -> void:
 			return
 	if item_id not in ["outfit_default", "acc_none", "decor_default"]:
 		_advance_goals("equip", "")
+		_task_bump("decorate")
 	_after_change()
 
 
@@ -661,6 +724,7 @@ func _check_chapter() -> void:
 	var gem_reward := int(reward.get("gems", 0))
 	add_coins(coin_reward)
 	add_gems(gem_reward)
+	_bump("player_xp", 120)
 	save["chapter"] = chapter_index() + 1
 
 	celebrate.emit(
@@ -732,6 +796,9 @@ func rescue(species_id: String) -> void:
 		"rescued": _now(), "trust": 0, "friend": "", "homed_at": 0
 	}
 	_advance_goals("rescue", species_id)
+	_bump("player_xp", 40)
+	push_mail("%s is safe" % Data.species_name(species_id),
+		"They are resting in the sanctuary. Sit with them when you can.", {}, true)
 	celebrate.emit(
 		"%s is safe!" % Data.species_name(species_id),
 		"They are shy for now. Care for them in the Sanctuary until they trust you.",
@@ -771,6 +838,8 @@ func do_tame(species_id: String, action_id: String) -> bool:
 	var before := int(record.get("trust", 0))
 	record["trust"] = mini(100, before + int(action.get("trust", 10)))
 	_bump("care_total")
+	_bump("player_xp", 8)
+	_task_bump("friends")
 	_advance_goals("care_total", "")
 	_start_cooldown("%s:%s" % [species_id, action_id], float(action.get("cooldown", 6.0)))
 	toast.emit(String(action.get("line", "%s relaxes.")) % Data.species_name(species_id))
@@ -828,7 +897,12 @@ func home_animal(species_id: String, npc_id: String) -> bool:
 	var coin_reward := 120 + int(round(score * 120.0))
 	add_gems(gem_reward)
 	add_coins(coin_reward)
+	add_hearts(1)
+	_bump("player_xp", 60)
 	_advance_goals("homed", "")
+	push_mail("A thank-you note from %s" % String(Data.npc(npc_id).get("name", "a friend")),
+		"%s settled in on the first night. I do not know how to thank you." % Data.species_name(species_id),
+		{"coins": 80}, false)
 
 	celebrate.emit(
 		"A forever home",
@@ -840,6 +914,193 @@ func home_animal(species_id: String, npc_id: String) -> bool:
 	)
 	_after_change()
 	return true
+
+
+## --- daily to-do list --------------------------------------------------
+
+## Rolls the To Do card over at midnight. Cheap enough to call on every change.
+func _ensure_today() -> void:
+	var tasks: Dictionary = save.get("tasks", {})
+	if String(tasks.get("date", "")) == _today():
+		return
+	tasks["date"] = _today()
+	tasks["progress"] = {}
+	tasks["claimed"] = []
+
+
+func _task_bump(track: String, amount: int = 1) -> void:
+	_ensure_today()
+	var progress: Dictionary = (save["tasks"] as Dictionary)["progress"]
+	progress[track] = int(progress.get(track, 0)) + amount
+
+
+func task_target(task: Dictionary) -> int:
+	return maxi(1, int(task.get("target", 1)))
+
+
+func task_progress(task: Dictionary) -> int:
+	_ensure_today()
+	var track := String(task.get("track", ""))
+	if track == "happy":
+		# Measured live: this one is about how your pet is doing right now.
+		return 1 if wellbeing() >= 80.0 else 0
+	var progress: Dictionary = (save["tasks"] as Dictionary).get("progress", {})
+	return mini(int(progress.get(track, 0)), task_target(task))
+
+
+func task_done(task: Dictionary) -> bool:
+	return task_progress(task) >= task_target(task)
+
+
+func task_claimed(task: Dictionary) -> bool:
+	_ensure_today()
+	return ((save["tasks"] as Dictionary).get("claimed", []) as Array).has(String(task.get("id", "")))
+
+
+func task_claimable(task: Dictionary) -> bool:
+	return task_done(task) and not task_claimed(task)
+
+
+func any_task_claimable() -> bool:
+	for task: Dictionary in DAILY_TASKS:
+		if task_claimable(task):
+			return true
+	return false
+
+
+func tasks_done_today() -> int:
+	var total := 0
+	for task: Dictionary in DAILY_TASKS:
+		if task_done(task):
+			total += 1
+	return total
+
+
+func claim_task(task_id: String) -> bool:
+	for task: Dictionary in DAILY_TASKS:
+		if String(task.get("id", "")) != task_id:
+			continue
+		if not task_claimable(task):
+			return false
+		var claimed: Array = (save["tasks"] as Dictionary)["claimed"]
+		claimed.append(task_id)
+		var coin_reward := int(task.get("coins", 0))
+		add_coins(coin_reward)
+		toast.emit("%s done. +%d coins" % [String(task.get("label", "Task")), coin_reward])
+
+		if claimed.size() >= DAILY_TASKS.size():
+			add_hearts(DAILY_CLEAR_HEARTS)
+			add_gems(DAILY_CLEAR_GEMS)
+			push_mail("A perfect day",
+				"You finished everything on today's list. %s noticed." % pet_name(),
+				{"hearts": DAILY_CLEAR_HEARTS, "gems": DAILY_CLEAR_GEMS}, true)
+			celebrate.emit("Everything done", "The whole list is ticked off. +%d heart, +%d gems"
+				% [DAILY_CLEAR_HEARTS, DAILY_CLEAR_GEMS], "daily")
+		_after_change()
+		return true
+	return false
+
+
+## --- mail --------------------------------------------------------------
+
+## Adds a message to the inbox. `already_paid` marks a reward that was granted
+## at the source, so the letter is a receipt rather than something to claim.
+func push_mail(title: String, body: String, reward: Dictionary = {}, already_paid: bool = false) -> void:
+	var inbox: Array = save.get("mail", [])
+	inbox.push_front({
+		"id": "m%d_%d" % [_now(), inbox.size()],
+		"title": title, "body": body, "at": _now(),
+		"read": false, "reward": reward, "claimed": already_paid or reward.is_empty(),
+	})
+	while inbox.size() > 40:
+		inbox.pop_back()
+	save["mail"] = inbox
+
+
+func mail() -> Array:
+	return save.get("mail", [])
+
+
+func unread_mail() -> int:
+	var total := 0
+	for letter: Dictionary in mail():
+		if not bool(letter.get("read", false)):
+			total += 1
+	return total
+
+
+func claimable_mail() -> int:
+	var total := 0
+	for letter: Dictionary in mail():
+		if not bool(letter.get("claimed", true)):
+			total += 1
+	return total
+
+
+func read_all_mail() -> void:
+	for letter: Dictionary in mail():
+		letter["read"] = true
+	_after_change()
+
+
+func claim_mail(mail_id: String) -> bool:
+	for letter: Dictionary in mail():
+		if String(letter.get("id", "")) != mail_id or bool(letter.get("claimed", true)):
+			continue
+		var reward: Dictionary = letter.get("reward", {})
+		add_coins(int(reward.get("coins", 0)))
+		add_gems(int(reward.get("gems", 0)))
+		add_hearts(int(reward.get("hearts", 0)))
+		letter["claimed"] = true
+		letter["read"] = true
+		toast.emit("Gift collected.")
+		_after_change()
+		return true
+	return false
+
+
+## --- "new since you last looked" dots ----------------------------------
+
+func mark_seen(key: String) -> void:
+	(save["seen"] as Dictionary)[key] = _now()
+	save_game()
+	changed.emit()
+
+
+func _seen_at(key: String) -> int:
+	return int((save.get("seen", {}) as Dictionary).get(key, 0))
+
+
+## A badge was earned since the player last opened Missions.
+func missions_have_news() -> bool:
+	var last := _seen_at("missions")
+	for badge_id: String in (save.get("badges", {}) as Dictionary).keys():
+		if int((save["badges"] as Dictionary)[badge_id]) > last:
+			return true
+	return false
+
+
+## Someone in the sanctuary is fully tamed and waiting to be matched.
+func friends_have_news() -> bool:
+	for species_id: String in sanctuary_ids():
+		if is_tamed(species_id):
+			return true
+	return false
+
+
+## A rescue mission in the current chapter has not been attempted yet.
+func events_have_news() -> bool:
+	return not available_missions().is_empty()
+
+
+## Rescue missions the player can start right now.
+func available_missions() -> Array:
+	var out: Array = []
+	var chapter := current_chapter()
+	for goal: Dictionary in chapter.get("goals", []):
+		if String(goal.get("type", "")) == "rescue" and not goal_done(goal):
+			out.append(String(goal.get("key", "")))
+	return out
 
 
 ## --- badges ------------------------------------------------------------
@@ -871,6 +1132,9 @@ func _check_badges() -> void:
 		(save["badges"] as Dictionary)[id] = _now()
 		var gem_reward := int(badge.get("gems", 0))
 		add_gems(gem_reward)
+		_bump("player_xp", 25)
+		push_mail("Badge earned: %s" % String(badge.get("name", id)),
+			String(badge.get("text", "")), {"gems": gem_reward}, true)
 		badge_unlocked.emit(id)
 		celebrate.emit(
 			"Badge earned: %s" % String(badge.get("name", id)),
@@ -895,6 +1159,7 @@ func _bump(key: String, amount: int = 1) -> void:
 
 
 func _after_change() -> void:
+	_ensure_today()
 	_check_chapter()
 	_check_badges()
 	save_game()

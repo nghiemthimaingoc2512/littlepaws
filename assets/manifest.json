@@ -20,8 +20,23 @@
         "side": 10, "camera": 11, "pet": 12, "point": 13, "flowers": 14
       }
     },
+
     "ragdoll": {
+      "_note": "The 6x3 sheet. This is the primary art for the starter cat.",
       "path": "res://assets/pets/ragdoll_sheet.png",
+      "cols": 6, "rows": 3,
+      "poses": {
+        "idle": 0, "happy": 1, "walk": 2, "peek": 3, "wave": 4, "away": 5,
+        "rest": 6, "belly": 7, "sleep": 8, "dressed": 9, "treat": 10, "curious": 11,
+        "eat": 12, "box": 13, "play": 14, "back": 15, "love": 16, "curl": 17,
+        "crown": 9, "loaf": 6, "proud": 4, "wink": 1, "bow": 9, "roll": 7,
+        "hood": 9, "bed": 17
+      }
+    },
+
+    "ragdoll_classic": {
+      "_note": "The 6x4 sheet. Used automatically for any pose the sheet above is missing, or as the main art if ragdoll_sheet.png is absent.",
+      "path": "res://assets/pets/ragdoll_sheet_classic.png",
       "cols": 6, "rows": 4,
       "poses": {
         "idle": 0, "happy": 1, "walk": 2, "peek": 3, "wave": 4, "away": 5,

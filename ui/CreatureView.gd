@@ -11,6 +11,8 @@ class_name CreatureView
 @export var is_owner: bool = false
 @export var silhouette: bool = false
 @export var animate: bool = true
+## Crops to the head, for the round avatar in the player card.
+@export var head_only: bool = false
 @export var accessory_color: Color = Color(0, 0, 0, 0)
 
 const HAIR := Color("6b5140")
@@ -75,15 +77,22 @@ func _draw_placeholder(box: Rect2, bob: float) -> void:
 	var body_radius := Vector2(unit * 0.30, unit * 0.26)
 	var head_center := center - Vector2(0.0, unit * 0.20)
 	var head_radius := Vector2(unit * 0.24, unit * 0.22)
+	if head_only:
+		head_center = center
+		head_radius = Vector2(unit * 0.40, unit * 0.37)
+		body_radius = Vector2(unit * 0.34, unit * 0.20)
+		center = box.size * 0.5 + Vector2(0.0, unit * 0.62)
 
 	# Soft shadow on the ground.
-	_ellipse(center + Vector2(0.0, unit * 0.30), Vector2(unit * 0.28, unit * 0.06), Color(0.55, 0.46, 0.40, 0.16))
+	if not head_only:
+		_ellipse(center + Vector2(0.0, unit * 0.30), Vector2(unit * 0.28, unit * 0.06),
+			Color(0.55, 0.46, 0.40, 0.16))
 
 	# A soft outline keeps the pale placeholder readable on a pale background.
 	var outline := body_color.darkened(0.24)
 
 	# Tail (a gentle sweep behind the body).
-	if not is_owner:
+	if not is_owner and not head_only:
 		var tail_from := center + Vector2(body_radius.x * 0.8, 0.0)
 		var tail_points := PackedVector2Array()
 		for i in 12:

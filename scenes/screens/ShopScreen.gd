@@ -20,7 +20,7 @@ func build(host: Control) -> void:
 	if not GameState.started():
 		return
 	var column := page(host)
-	column.add_child(UI.spacer(50))
+	column.add_child(UI.spacer(74))
 
 	var header := UI.hbox(10)
 	header.add_child(UI.label("Paw & Co.", 30, Art.INK))
@@ -50,7 +50,7 @@ func build(host: Control) -> void:
 	var group: Dictionary = Data.items.get(_tab, {})
 	for item_id: String in group.keys():
 		grid.add_child(_item_card(item_id, group[item_id]))
-	column.add_child(UI.spacer(62))
+	column.add_child(UI.spacer(94))
 
 
 func _free_coins_card() -> Control:

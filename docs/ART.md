@@ -26,9 +26,9 @@ around a 16:9 safe area and keep the interesting part near the middle.
 
 | Key | Scene | Used by |
 | --- | --- | --- |
-| `bg_home` | apartment / room | Home, Library, Badges, Profile |
-| `bg_mall` | shopping street | Journey, Shop |
-| `bg_meadow` | meadow | Sanctuary, meadow rescues |
+| `bg_home` | apartment / room | Home, Pets, Bag, Daily, Missions, Inbox, Profile |
+| `bg_mall` | shopping street | Map, Shop |
+| `bg_meadow` | meadow | Friends, meadow rescues |
 | `bg_forest` | misty forest | forest rescues |
 | `bg_bay` | frost bay | bay rescues |
 
@@ -45,17 +45,32 @@ starting at 0. Declare the grid once and name the cells:
 }
 ```
 
-The manifest ships with two sheets already mapped:
+The manifest ships with three sheets already mapped:
 
-- **`owner`** — a 5×3 grid of the player character. Cell names in reading order:
+- **`owner`** — a 5×3 grid of the player character, saved as
+  `assets/owner/owner_sheet.png`. Cell names in reading order:
   `idle, hug, drink, cheer, walk / read, think, sleep, laptop, wink / side,
   camera, pet, point, flowers`.
-- **`ragdoll`** — a 6×4 grid of the cat. Cell names in reading order:
+- **`ragdoll`** — a 6×3 grid of the cat, saved as
+  `assets/pets/ragdoll_sheet.png`. Cell names in reading order:
+  `idle, happy, walk, peek, wave, away / rest, belly, sleep, dressed, treat,
+  curious / eat, box, play, back, love, curl`.
+- **`ragdoll_classic`** — a 6×4 grid of the same cat, saved as
+  `assets/pets/ragdoll_sheet_classic.png`. Cell names in reading order:
   `idle, happy, walk, peek, wave, away / sleep, eat, belly, dressed, loaf,
   curious / box, curl, play, wink, proud, love / crown, bow, roll, hood, bed,
   back`.
 
+`Art.creature()` looks in `ragdoll` first and falls back to `ragdoll_classic`,
+so you can ship either sheet, or both. To make the 6×4 sheet the primary art
+instead, swap the two `path` values in the manifest — nothing else changes.
+
 Cells must be evenly sized. Transparent PNG is expected.
+
+When no `bg_home` image is present the game draws a stand-in room — sofa,
+window, cat tree and rug, tinted by the decor the player has equipped. Real
+background art replaces it entirely, and the interface is laid out to keep the
+right-hand panel clear of whatever is behind it.
 
 ## Poses the game asks for
 

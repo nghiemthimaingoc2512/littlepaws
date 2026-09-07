@@ -9,7 +9,7 @@ func build(host: Control) -> void:
 	if not GameState.started():
 		return
 	var column := page(host)
-	column.add_child(UI.spacer(50))
+	column.add_child(UI.spacer(74))
 	column.add_child(UI.label("Your journey", 30, Art.INK))
 
 	var scroll := UI.scroll()

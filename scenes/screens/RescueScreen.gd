@@ -58,7 +58,7 @@ func _next_round() -> void:
 
 func build(host: Control) -> void:
 	var column := page(host)
-	column.add_child(UI.spacer(50))
+	column.add_child(UI.spacer(74))
 	if _finished:
 		_build_finish(column)
 		return
@@ -122,7 +122,7 @@ func build(host: Control) -> void:
 	var leave := UI.button("Come back later", Callable(), Art.CREAM)
 	leave.pressed.connect(func() -> void: goto("journey"))
 	right.add_child(leave)
-	column.add_child(UI.spacer(62))
+	column.add_child(UI.spacer(94))
 
 
 func _answer(choice_id: String) -> void:
@@ -174,4 +174,4 @@ func _build_finish(column: VBoxContainer) -> void:
 	journey.custom_minimum_size = Vector2(220, 50)
 	journey.pressed.connect(func() -> void: goto("journey"))
 	row.add_child(journey)
-	column.add_child(UI.spacer(62))
+	column.add_child(UI.spacer(94))

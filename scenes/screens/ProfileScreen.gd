@@ -12,7 +12,7 @@ func build(host: Control) -> void:
 	if not GameState.started():
 		return
 	var column := page(host)
-	column.add_child(UI.spacer(50))
+	column.add_child(UI.spacer(74))
 	column.add_child(UI.label("Profile", 30, Art.INK))
 
 	var body := UI.hbox(16)
@@ -21,7 +21,7 @@ func build(host: Control) -> void:
 	body.add_child(_owner_card())
 	body.add_child(_pet_card())
 	body.add_child(_stats_card())
-	column.add_child(UI.spacer(62))
+	column.add_child(UI.spacer(94))
 
 
 func _owner_card() -> Control:

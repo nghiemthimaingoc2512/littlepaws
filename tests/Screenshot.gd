@@ -3,7 +3,8 @@ extends Node
 ## be checked without a device. Run with:
 ##   xvfb-run -a godot --path . res://tests/Screenshot.tscn
 
-const SHOTS := ["onboarding", "home", "journey", "sanctuary", "library", "shop", "badges"]
+const SHOTS := ["onboarding", "home", "daily", "missions", "events", "bag", "mail",
+	"journey", "sanctuary", "library", "shop"]
 const OUT_DIR := "user://shots"
 
 
@@ -22,6 +23,19 @@ func _ready() -> void:
 		GameState.rescue(id)
 	(GameState.save["library"] as Dictionary)["hamster"]["trust"] = 100
 	GameState.home_animal("hamster", "mai")
+	GameState.save["tasks"] = {"date": Time.get_date_string_from_system(),
+		"progress": {"care": 3, "play": 1}, "claimed": ["t_play"]}
+
+	# The care sheet is a state of the home screen, so it gets its own pass.
+	main.call("goto", "home", {"open_care": true})
+	for i in 6:
+		await get_tree().process_frame
+	main.set("_celebration_queue", [])
+	for modal in (main.get("_modal_layer") as Node).get_children():
+		modal.queue_free()
+	await get_tree().create_timer(0.15).timeout
+	get_viewport().get_texture().get_image().save_png("%s/home_care.png" % OUT_DIR)
+	print("wrote home_care.png")
 
 	for screen_name: String in SHOTS:
 		main.call("goto", screen_name)

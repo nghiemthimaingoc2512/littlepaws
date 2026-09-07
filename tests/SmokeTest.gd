@@ -14,6 +14,8 @@ func _ready() -> void:
 	_test_chapter_one()
 	_test_rescue_flow()
 	_test_economy()
+	_test_daily_and_mail()
+	_test_notifications()
 	_test_decay_is_survivable()
 	_test_save_round_trip()
 
@@ -165,7 +167,7 @@ func _test_economy() -> void:
 	GameState.equip("acc_bow")
 	check(GameState.equipped("accessory") == "acc_bow", "the item is equipped")
 
-	GameState.save["wallet"] = {"coins": 0, "gems": 0}
+	GameState.save["wallet"] = {"coins": 0, "gems": 0, "hearts": GameState.hearts()}
 	check(not GameState.buy("outfit", "outfit_sakura"), "an unaffordable item is refused")
 	check(not GameState.owns("outfit_sakura"), "a refused purchase grants nothing")
 
@@ -179,6 +181,87 @@ func _test_economy() -> void:
 	GameState.grant_ad_reward()
 	check(GameState.coins() == coins_pre_ad + GameState.AD_REWARD_COINS, "the ad reward is paid")
 	check(not GameState.ad_available(), "the ad goes on cooldown")
+
+
+func _test_daily_and_mail() -> void:
+	section("daily list, hearts and mail")
+	check(GameState.hearts() > 0, "hearts are a real currency")
+	check(GameState.player_level() >= 1, "the player has their own level")
+	check(int(GameState.player_level_info()["need"]) > 0, "the level bar has a target")
+
+	# Start the day fresh.
+	GameState.save["tasks"] = {"date": Time.get_date_string_from_system(),
+		"progress": {}, "claimed": []}
+	var care_task: Dictionary = GameState.DAILY_TASKS[0]
+	check(not GameState.task_done(care_task), "the care task starts unfinished")
+
+	for action_id: String in ["feed", "play", "brush"]:
+		clear_cooldowns()
+		stock_pantry()
+		GameState._decay(4.0)
+		check(GameState.do_care(action_id), "care task accepts %s" % action_id)
+	check(GameState.task_done(care_task), "three care moments finish the care task")
+	check(GameState.task_claimable(care_task), "a finished task can be collected")
+
+	var coins_before := GameState.coins()
+	check(GameState.claim_task("t_care"), "collecting a task works")
+	check(GameState.coins() > coins_before, "collecting a task pays")
+	check(not GameState.claim_task("t_care"), "a task cannot be collected twice")
+
+	# Finish the rest of the list; the completion bonus should land.
+	var hearts_before := GameState.hearts()
+	var progress: Dictionary = (GameState.save["tasks"] as Dictionary)["progress"]
+	progress["play"] = 9
+	progress["decorate"] = 9
+	progress["friends"] = 9
+	var stats: Dictionary = GameState.pet()["stats"]
+	for key: String in GameState.STAT_KEYS:
+		stats[key] = 100.0
+	for task: Dictionary in GameState.DAILY_TASKS:
+		GameState.claim_task(String(task.get("id", "")))
+	check(GameState.tasks_done_today() == GameState.DAILY_TASKS.size(),
+		"the whole list can be finished in a day")
+	check(GameState.hearts() > hearts_before, "finishing the whole list pays a heart")
+	check(not GameState.any_task_claimable(), "nothing is left to collect")
+
+	check(GameState.mail().size() > 0, "rescues and badges write letters to the inbox")
+	var gift_id := ""
+	for letter: Dictionary in GameState.mail():
+		if not bool(letter.get("claimed", true)):
+			gift_id = String(letter.get("id", ""))
+			break
+	check(gift_id != "", "a thank-you note arrived with a gift attached")
+	if gift_id != "":
+		var before_gift := GameState.coins()
+		check(GameState.claim_mail(gift_id), "a gift can be collected")
+		check(GameState.coins() > before_gift, "the gift pays out")
+		check(not GameState.claim_mail(gift_id), "a gift cannot be collected twice")
+
+	GameState.read_all_mail()
+	check(GameState.unread_mail() == 0, "opening the inbox clears its badge")
+
+
+func _test_notifications() -> void:
+	section("what the red dots mean")
+	for id: String in GameState.sanctuary_ids():
+		(GameState.save["library"] as Dictionary)[id]["trust"] = 0
+	check(not GameState.friends_have_news(), "no dot while nobody is ready to be matched")
+
+	var waiting: Array = GameState.sanctuary_ids()
+	check(not waiting.is_empty(), "someone is still waiting in the sanctuary")
+	if not waiting.is_empty():
+		(GameState.save["library"] as Dictionary)[String(waiting[0])]["trust"] = 100
+		check(GameState.friends_have_news(), "a dot appears when someone is ready to be matched")
+
+	GameState.mark_seen("missions")
+	check(not GameState.missions_have_news(), "no dot straight after opening Missions")
+	(GameState.save["badges"] as Dictionary)["_probe"] = GameState._now() + 5
+	check(GameState.missions_have_news(), "a dot appears when a badge is earned afterwards")
+	(GameState.save["badges"] as Dictionary).erase("_probe")
+
+	GameState.save["chapter"] = 3  # Cozy Alley, a rescue chapter
+	check(not GameState.available_missions().is_empty(), "a rescue chapter offers missions")
+	check(GameState.events_have_news(), "a dot appears on Events while animals need help")
 
 
 func _test_decay_is_survivable() -> void:

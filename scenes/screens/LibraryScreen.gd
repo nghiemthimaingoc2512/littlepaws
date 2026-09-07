@@ -12,7 +12,7 @@ func build(host: Control) -> void:
 	if not GameState.started():
 		return
 	var column := page(host)
-	column.add_child(UI.spacer(50))
+	column.add_child(UI.spacer(74))
 
 	var all_ids: Array = Data.rescuable_ids()
 	var header := UI.hbox(10)
@@ -39,7 +39,7 @@ func build(host: Control) -> void:
 		grid.add_child(_entry_card(id, false))
 
 	body.add_child(_detail_panel())
-	column.add_child(UI.spacer(62))
+	column.add_child(UI.spacer(94))
 
 
 func _entry_card(species_id: String, is_companion: bool) -> Control:

@@ -19,7 +19,7 @@ func build(host: Control) -> void:
 	if not GameState.started():
 		return
 	var column := page(host)
-	column.add_child(UI.spacer(50))
+	column.add_child(UI.spacer(74))
 
 	var waiting: Array = GameState.sanctuary_ids()
 	if _selected.is_empty() or not waiting.has(_selected):
@@ -34,7 +34,7 @@ func build(host: Control) -> void:
 
 	if waiting.is_empty():
 		column.add_child(_empty_state())
-		column.add_child(UI.spacer(62))
+		column.add_child(UI.spacer(94))
 		return
 
 	var body := UI.hbox(16)
@@ -42,7 +42,7 @@ func build(host: Control) -> void:
 	column.add_child(body)
 	body.add_child(_waiting_list(waiting))
 	body.add_child(_detail_panel())
-	column.add_child(UI.spacer(62))
+	column.add_child(UI.spacer(94))
 
 
 func _empty_state() -> Control:

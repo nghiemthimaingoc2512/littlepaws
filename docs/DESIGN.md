@@ -39,19 +39,53 @@ actions raise it to 100; then you pick which of three people it goes home with.
 The pair is recorded in the Library with a story. This is the emotional payoff
 and the reason the collection is worth filling.
 
+## The screen
+
+The home screen is the room, and the interface floats over it rather than
+framing it: player card top-left, the three currencies top-centre, inbox /
+camera / settings top-right, four shortcuts down the left, the day's To Do card
+on the right, and the navigation plus **Let's Play!** along the bottom.
+
+Care is deliberately not on that screen. Tapping the pet slides up a sheet with
+the five meters and the six actions, and the pet moves up so you can still watch
+it react. The room stays a place to look at, not a dashboard.
+
+Every red dot answers a question the player would otherwise have to go and check:
+a task ready to collect, a badge earned since you last opened Missions, an animal
+still out there, a rescue ready to be matched, an unread letter. No dot is
+cosmetic, and none of them nag — they disappear by being looked at.
+
 ## Economy
 
-| Source | Coins | Gems |
-| --- | --- | --- |
-| Chapter complete | 200 → 1000 | 3 → 12 |
-| Forever home found | 120 → 240 | 3 → 7 |
-| Badge earned | — | 2 → 20 |
-| Daily visit | 55 → 145, by streak | 5 every 7th day |
-| Rewarded video | 60 | — |
+| Source | Coins | Gems | Hearts |
+| --- | --- | --- | --- |
+| Chapter complete | 200 → 1000 | 3 → 12 | — |
+| Forever home found | 120 → 240 | 3 → 7 | 1 |
+| Badge earned | — | 2 → 20 | — |
+| Daily visit | 55 → 145, by streak | 5 every 7th day | — |
+| Daily To Do task | 50 → 80 each | 2 for the full list | 1 for the full list |
+| Rewarded video | 60 | — | — |
 
 Coins buy food, outfits, accessories and decor. Gems buy the premium cosmetic in
-each category. Nothing behind a paywall gates progress — every chapter, animal
-and badge is reachable without spending or watching anything.
+each category. Hearts are the slowest of the three and come only from finishing
+a whole day's list or finding an animal its person, which keeps them tied to the
+part of the game that matters. Nothing behind a paywall gates progress — every
+chapter, animal and badge is reachable without spending or watching anything.
+
+## The daily list
+
+Five tasks, reset at midnight: care three times, play once, change something you
+are wearing or the room, sit with a rescue, and have your pet above 80 wellbeing.
+They are small enough to finish in one visit and carry no penalty for being
+missed — the list simply starts again. The last one is measured live rather than
+counted, so it reads as a state of your pet rather than a chore.
+
+## The inbox
+
+Letters are written by the game as things happen: a thank-you note from the
+person who adopted a rescue, a badge receipt, a note that an animal is resting in
+the sanctuary. Some carry a gift to collect. It is the game's memory of what you
+did, and the only place progress is narrated back to you in someone else's voice.
 
 Rewarded video: 90-second cooldown, 12 per day. See
 [MONETISATION.md](MONETISATION.md).
@@ -62,9 +96,14 @@ Rewarded video: 90-second cooldown, 12 per day. See
 6 foods, and 4 cosmetics in each of three categories. All of it lives in
 `data/*.json` — text, balance and new animals need no code.
 
+Every icon in the interface is drawn in code (`ui/IconView.gd`), so the game
+ships with no icon assets and nothing to re-export when the palette changes.
+
 ## Architecture
 
-`GameState` is the only mutable state and the only place rules live. It emits
+`GameState` is the only mutable state and the only place rules live. The player's
+own level rises from every kind of progress — care, taming, rescues, homes,
+badges, chapters — so the header reflects the whole journey rather than one loop. It emits
 `changed` when something meaningful happens, and a cheap `ticked` on the decay
 timer so meters animate without rebuilding layouts. Screens are plain GDScript
 that build their node tree in `build()` and rebuild on `changed`, which makes

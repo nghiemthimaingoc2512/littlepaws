@@ -43,9 +43,21 @@ xvfb-run -a godot --path . res://tests/Screenshot.tscn
 | Save file, every game rule | `autoload/GameState.gd` |
 | Content loaded from JSON | `autoload/Data.gd`, `data/*.json` |
 | Palette, theme, art loading | `autoload/Art.gd` |
+| Floating chrome and routing | `scenes/Main.gd` |
 | Screens | `scenes/screens/*.gd` |
-| Shared widgets | `ui/*.gd` |
+| Shared widgets and vector icons | `ui/*.gd` |
 | Tests | `tests/` |
+
+The home screen is the room: shortcuts down the left (Daily, Missions, Shop,
+Events), the day's To Do list on the right, your pet in the middle. Tapping the
+pet — or **Let's Play!** — slides up the care sheet with its meters and the six
+care actions. The bottom bar is **Home, Pets, Friends, Map, Bag, Shop**; the top
+carries your level, the three currencies, and the inbox, camera and settings.
+
+Red dots are never decorative. Daily lights up when a task is ready to collect,
+Missions when a badge was earned since you last looked, Events while an animal
+still needs help, Friends when a rescue is ready to be matched, and the inbox
+when a letter is unread.
 
 **Chapters 1–3** are pet care: the first day, growing up, and health and
 grooming. **Chapters 4–7** are rescue regions — Cozy Alley, Bloom Meadow,
@@ -56,9 +68,14 @@ then choose which of three people it goes home with. Every match is a happy
 ending; a closer one simply pays a little better. Homed animals are recorded in
 the **Library** with their story and their person.
 
-**21 badges**, coins and gems, outfits for you, accessories for your pet, and
-room decor. Coins come from chapters, rescues and rewarded video; gems come from
-badges and forever homes.
+**21 badges**, three currencies, outfits for you, accessories for your pet, and
+room decor. Coins come from chapters, the daily list and rewarded video; gems
+come from badges and forever homes; hearts come from clearing the day's list and
+from finding an animal its person. None of the three gates a chapter.
+
+A **daily To Do card** asks for five small things — care, play, decorate, meet
+friends, be happy — and the **inbox** collects thank-you notes, badge receipts
+and gifts as you earn them.
 
 ## Adding your own art
 

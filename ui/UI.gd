@@ -126,6 +126,62 @@ static func creature(species_id: String, box_size: float, pose: String = "idle")
 	return view
 
 
+## Makes any layout tappable by laying an invisible button over it. Buttons
+## cannot hold a real layout, so this is how icon-plus-label controls are built.
+static func clickable(content: Control, on_press: Callable,
+		min_size: Vector2 = Vector2.ZERO) -> Control:
+	var wrap := Control.new()
+	wrap.custom_minimum_size = min_size
+	content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	wrap.add_child(content)
+
+	var hit := Button.new()
+	hit.flat = true
+	hit.focus_mode = Control.FOCUS_NONE
+	hit.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for slot: String in ["normal", "hover", "pressed", "focus", "disabled"]:
+		hit.add_theme_stylebox_override(slot, StyleBoxEmpty.new())
+	if on_press.is_valid():
+		hit.pressed.connect(on_press)
+	wrap.add_child(hit)
+	return wrap
+
+
+## The small red badge that marks something new. Anchored to the top-right of
+## whatever it is added to.
+static func dot(host: Control, count: int = 0) -> void:
+	var mark := PanelContainer.new()
+	var style := Art.panel_box(Art.RED, 999)
+	style.content_margin_left = 5
+	style.content_margin_right = 5
+	style.content_margin_top = 1
+	style.content_margin_bottom = 1
+	style.set_border_width_all(2)
+	style.border_color = Art.WHITE
+	mark.add_theme_stylebox_override("panel", style)
+	mark.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	mark.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	mark.offset_top = -6.0
+	mark.offset_right = 8.0
+	mark.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var text := label(str(count) if count > 0 else " ", 11, Art.WHITE, HORIZONTAL_ALIGNMENT_CENTER)
+	text.custom_minimum_size = Vector2(8 if count <= 0 else 0, 12)
+	mark.add_child(text)
+	host.add_child(mark)
+
+
+## An icon next to a piece of text, the pattern used all over the interface.
+static func icon_row(icon_kind: String, text: String, box: float, font_size: int,
+		color: Color = Color("6b4a32"), icon_tint: Color = Color("6b4a32"),
+		icon_accent: Color = Color("f2c14e")) -> HBoxContainer:
+	var row := hbox(6)
+	row.add_child(IconView.make(icon_kind, box, icon_tint, icon_accent))
+	if text != "":
+		row.add_child(label(text, font_size, color))
+	return row
+
+
 ## Wraps content in a padded card with a heading.
 static func section(heading: String, content: Control, fill: Color = Color("fffcf7")) -> PanelContainer:
 	var box := card(fill)
