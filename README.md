@@ -30,6 +30,8 @@ Both targets read the same content from `data/*.json` and follow the same rules;
 ## Run the tests
 
 ```bash
+cd web && npm install                                 # once
+cd web && npx playwright install chromium             # once, for the browser suite
 cd web && npm run dev &                               # the browser suite needs it running
 cd web && npm run test                                # 77 interaction checks in Chromium
 

@@ -5,7 +5,7 @@
 //   npm run dev            (in web/)
 //   node tests/interaction.test.mjs
 import { chromium } from 'playwright'
-import { mkdirSync } from 'node:fs'
+import { existsSync, mkdirSync } from 'node:fs'
 
 const URL = process.env.GAME_URL ?? 'http://localhost:5173/'
 const SHOTS = process.env.SHOT_DIR ?? '/tmp/littlepaws-shots'
@@ -20,8 +20,11 @@ const check = (ok, label) => {
 }
 const section = (title) => console.log(`\n== ${title}`)
 
+// Use Playwright's own Chromium (`npx playwright install chromium`) unless a
+// prebuilt one is pointed at explicitly, so this runs on any machine.
+const browserPath = process.env.CHROMIUM_PATH
 const browser = await chromium.launch({
-  executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  ...(browserPath && existsSync(browserPath) ? { executablePath: browserPath } : {}),
   args: ['--no-sandbox'],
 })
 const page = await browser.newPage({ viewport: { width: 1440, height: 810 } })

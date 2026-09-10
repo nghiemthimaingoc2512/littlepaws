@@ -44,13 +44,16 @@ The output is committed, so a normal build and CI need no Python. See
 
 ## Testing
 
-The interaction suite starts nothing itself — run the dev server first:
+The interaction suite needs a browser and a running server:
 
 ```bash
+npx playwright install chromium   # once
 npm run dev &
 npm run test                      # against the dev server
 GAME_URL=http://localhost:4173/ npm run test   # against the production build
 ```
+
+Set `CHROMIUM_PATH` to use a Chromium you already have instead of Playwright's.
 
 It plays the game: finishes onboarding, opens and closes the care sheet, feeds
 and plays and checks the meters and counters moved, ticks off a daily task and
