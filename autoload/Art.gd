@@ -113,6 +113,9 @@ func creature(species_id: String, pose_name: String = "idle") -> Texture2D:
 	var tex := pose(species_id, pose_name)
 	if tex != null:
 		return tex
+	tex = image("pet_" + species_id)
+	if tex != null:
+		return tex
 	# A species can ship a second sheet; the primary one wins when both exist.
 	tex = pose(species_id + "_classic", pose_name)
 	if tex != null:
@@ -126,6 +129,9 @@ func creature(species_id: String, pose_name: String = "idle") -> Texture2D:
 ## Artwork for the player character.
 func owner(pose_name: String = "idle") -> Texture2D:
 	var tex := pose("owner", pose_name)
+	if tex != null:
+		return tex
+	tex = image("owner_" + pose_name)
 	if tex != null:
 		return tex
 	return _load("res://assets/owner/%s.png" % pose_name)

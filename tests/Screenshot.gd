@@ -19,10 +19,10 @@ func _ready() -> void:
 	GameState.new_game("ragdoll", "Muffin", "Ngoc")
 	GameState.add_coins(2000)
 	GameState.add_gems(40)
-	for id: String in ["hamster", "duckling", "pomeranian"]:
+	for id: String in ["kitten_grey", "cat_ginger", "dog_shiba"]:
 		GameState.rescue(id)
-	(GameState.save["library"] as Dictionary)["hamster"]["trust"] = 100
-	GameState.home_animal("hamster", "mai")
+	(GameState.save["library"] as Dictionary)["kitten_grey"]["trust"] = 100
+	GameState.home_animal("kitten_grey", "mai")
 	GameState.save["tasks"] = {"date": Time.get_date_string_from_system(),
 		"progress": {"care": 3, "play": 1}, "claimed": ["t_play"]}
 

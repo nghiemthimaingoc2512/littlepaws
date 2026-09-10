@@ -1,0 +1,41 @@
+{
+  "owner": {
+    "hug": "/art/owner/hug.png",
+    "back": "/art/owner/back.png",
+    "cheer": "/art/owner/cheer.png",
+    "drink": "/art/owner/drink.png",
+    "idle": "/art/owner/idle.png",
+    "read": "/art/owner/read.png",
+    "wink": "/art/owner/wink.png",
+    "think": "/art/owner/think.png",
+    "laptop": "/art/owner/laptop.png",
+    "sleep": "/art/owner/sleep.png",
+    "point": "/art/owner/point.png",
+    "camera": "/art/owner/camera.png",
+    "flowers": "/art/owner/flowers.png",
+    "pet": "/art/owner/pet.png",
+    "side": "/art/owner/side.png",
+    "portrait": "/art/owner/portrait.png"
+  },
+  "npc": {
+    "sophie": "/art/npc/sophie.jpg",
+    "emma": "/art/npc/emma.jpg",
+    "mia": "/art/npc/mia.jpg",
+    "leo": "/art/npc/leo.jpg",
+    "noah": "/art/npc/noah.jpg",
+    "alex": "/art/npc/alex.jpg"
+  },
+  "pets": {
+    "kitten_grey": "/art/pets/kitten_grey.png",
+    "cat_ginger": "/art/pets/cat_ginger.png",
+    "dog_shiba": "/art/pets/dog_shiba.png",
+    "cat_white": "/art/pets/cat_white.png",
+    "dog_poodle": "/art/pets/dog_poodle.png",
+    "calico": "/art/pets/calico.png"
+  },
+  "bg": {
+    "room": "/art/bg/room.jpg",
+    "mall": "/art/bg/mall.jpg",
+    "park": "/art/bg/park.jpg"
+  }
+}

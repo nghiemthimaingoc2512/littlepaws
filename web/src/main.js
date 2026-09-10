@@ -3,12 +3,13 @@
 import './style.css'
 import { game } from './state.js'
 import { el, row, col, button, iconButton, icon, meter } from './ui.js'
-import { ownerNode, roomNode } from './art.js'
+import { ownerNode, sceneUrl } from './art.js'
 import { OnboardingScreen } from './screens/onboarding.js'
 import { HomeScreen } from './screens/home.js'
 import { DailyScreen } from './screens/daily.js'
 import { MissionsScreen } from './screens/missions.js'
-import { EventsScreen } from './screens/events.js'
+import { ActivitiesScreen } from './screens/activities.js'
+import { MinigameScreen } from './screens/minigame.js'
 import { BagScreen } from './screens/bag.js'
 import { MailScreen } from './screens/mail.js'
 import { PetsScreen } from './screens/pets.js'
@@ -20,7 +21,8 @@ import { ProfileScreen } from './screens/profile.js'
 
 const SCREENS = {
   onboarding: OnboardingScreen, home: HomeScreen, daily: DailyScreen,
-  missions: MissionsScreen, events: EventsScreen, bag: BagScreen, mail: MailScreen,
+  missions: MissionsScreen, activities: ActivitiesScreen, minigame: MinigameScreen,
+  bag: BagScreen, mail: MailScreen,
   pets: PetsScreen, friends: FriendsScreen, map: MapScreen, shop: ShopScreen,
   rescue: RescueScreen, profile: ProfileScreen,
 }
@@ -36,7 +38,7 @@ const TABS = [
 
 const app = document.getElementById('app')
 const stage = el('div', { class: 'stage', id: 'stage' })
-const backdrop = el('div', { id: 'backdrop' })
+const backdrop = el('div', { id: 'backdrop', class: 'room' })
 const host = el('div', { id: 'host' })
 const chrome = el('div', { class: 'chrome', id: 'chrome' })
 const toastEl = el('div', { class: 'toast', id: 'toast' })
@@ -49,7 +51,7 @@ app.append(stage, el('div', {
 
 let current = 'home'
 let currentArgs = {}
-let currentScene = 'home'
+let currentScene = ''
 
 // --- stage scaling ---------------------------------------------------------
 function fit() {
@@ -79,10 +81,10 @@ function render() {
   mounted = screen
   host.replaceChildren(screen.node ?? screen)
 
-  const scene = screen.scene ?? 'home'
-  if (scene !== currentScene || !backdrop.firstChild) {
+  const scene = screen.scene ?? 'room'
+  if (scene !== currentScene) {
     currentScene = scene
-    backdrop.replaceChildren(roomNode(scene))
+    backdrop.style.backgroundImage = `url("${sceneUrl(scene)}")`
   }
   renderChrome(screen.chrome !== false)
 }
@@ -107,7 +109,7 @@ function renderChrome(visible) {
   if (!visible || !game.started()) return
 
   const level = game.playerLevelInfo()
-  const avatar = el('div', { class: 'avatar' }, [ownerNode('idle', 'creature')])
+  const avatar = el('div', { class: 'avatar' }, [ownerNode('portrait', 'art')])
   const player = el('button', { class: 'player-card', id: 'btn-profile', onClick: () => go('profile') }, [
     avatar,
     el('div', {}, [
@@ -221,7 +223,10 @@ function showNextCelebration() {
 }
 
 // --- wiring ----------------------------------------------------------------
-game.addEventListener('changed', () => render())
+game.addEventListener('changed', () => {
+  if (mounted?.keepOnChange) { renderChrome(true); return }
+  render()
+})
 game.addEventListener('toast', (e) => showToast(e.detail))
 game.addEventListener('celebrate', (e) => {
   celebrationQueue.push(e.detail)

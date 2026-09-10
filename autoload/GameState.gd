@@ -854,20 +854,34 @@ func do_tame(species_id: String, action_id: String) -> bool:
 	return true
 
 
+## The person this animal has been waiting for, named by the artwork.
+func destined_friend(species_id: String) -> String:
+	return String(Data.get_species(species_id).get("friend", ""))
+
+
 ## Three candidate friends for a rescue, chosen deterministically so the
-## offer does not change every time the screen is opened.
+## offer does not change every time the screen is opened. The right one is
+## always among them.
 func friend_candidates(species_id: String) -> Array:
-	var pool: Array = Data.npcs.duplicate()
+	var destined := destined_friend(species_id)
+	var pool: Array = []
+	for person: Dictionary in Data.npcs:
+		if String(person.get("id", "")) != destined:
+			pool.append(person)
 	var seed_value := 0
 	for c in species_id:
 		seed_value += c.unicode_at(0)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	var picked: Array = []
-	while picked.size() < mini(3, pool.size()):
+	while picked.size() < mini(2, pool.size()):
 		var candidate: Dictionary = pool[rng.randi_range(0, pool.size() - 1)]
 		if candidate not in picked:
 			picked.append(candidate)
+	var right := Data.npc(destined)
+	if not right.is_empty():
+		picked.append(right)
+	picked.sort_custom(func(a, b): return String(a.get("id", "")) < String(b.get("id", "")))
 	return picked
 
 
@@ -885,8 +899,15 @@ func match_score(species_id: String, npc_id: String) -> float:
 	return clampf(0.4 + 0.3 * shared, 0.0, 1.0)
 
 
+## Reuniting is a guess, but never a punished one: the wrong person costs
+## nothing and the animal simply waits for you to try again.
 func home_animal(species_id: String, npc_id: String) -> bool:
 	if not is_tamed(species_id) or is_homed(species_id):
+		return false
+	var destined := destined_friend(species_id)
+	if destined != "" and npc_id != destined:
+		toast.emit("%s adores them, but they did not settle. Try someone else."
+			% String(Data.npc(npc_id).get("name", "They")))
 		return false
 	var record: Dictionary = (save["library"] as Dictionary)[species_id]
 	record["friend"] = npc_id

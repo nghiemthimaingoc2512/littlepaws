@@ -1,8 +1,8 @@
-// Where rescued animals stay until they trust you, and until you find the
-// person they will spend their life with.
+// Friends: the animals waiting for you, and the people who have been waiting
+// for them. Reuniting a pair is a guess you can make as many times as you like.
 import { el, row, card, button, text, pill, icon, meter } from '../ui.js'
-import { creatureNode } from '../art.js'
-import { getSpecies, speciesName } from '../data.js'
+import { petNode, friendNode } from '../art.js'
+import { getSpecies, speciesName, npc as dataNpc, Data } from '../data.js'
 import { TAME_ACTIONS } from '../state.js'
 
 let selected = ''
@@ -16,36 +16,45 @@ export function FriendsScreen({ go, args, game }) {
     const waiting = game.sanctuaryIds()
     if (!selected || !waiting.includes(selected)) selected = waiting[0] ?? ''
 
-    const header = row([icon('friends'), el('h1', { text: 'Friends' }), el('div', { class: 'grow' }),
-      pill(`${waiting.length} waiting · ${game.homedCount()} homed`, 'sage')], 'head')
+    const header = row([
+      icon('friends'), el('h1', { text: 'Friends' }), el('div', { class: 'grow' }),
+      pill(`${waiting.length} waiting`, 'sage'),
+      pill(`${game.homedCount()} / 5 reunited`, 'pink'),
+    ], 'head')
 
-    if (!waiting.length) {
-      wrap.replaceChildren(header, card([
-        el('h2', { text: 'The sanctuary is quiet right now' }),
-        text('Every animal you rescued has found their person. Head out on the map to find someone new.'),
-        button('Open the map', () => go('map'), 'primary', {}),
-      ]))
-      return
-    }
+    const body = el('div', { class: 'col' })
+    body.append(waiting.length ? row([list(waiting), detail()], 'grow') : quiet())
+    body.append(el('h2', { text: 'Our human friends' }))
+    body.append(el('div', { class: 'grid c3' }, Data.npcs.map(friendCard)))
 
-    const list = el('div', { class: 'scroll', style: { width: '360px', flex: 'none' } },
+    wrap.replaceChildren(header, el('div', { class: 'scroll' }, [body]))
+  }
+
+  function quiet() {
+    return card([
+      el('h2', { text: 'Nobody is waiting right now' }),
+      text('Every animal you found is home. Head out to Play to find someone new.'),
+      button('Go to Play', () => go('activities'), 'primary', {}),
+    ])
+  }
+
+  function list(waiting) {
+    return el('div', { style: { width: '330px', flex: 'none' } },
       [el('div', { class: 'col' }, waiting.map((id) => {
         const node = card([
           row([
-            el('div', { class: 'tile', style: { width: '64px' } }, [creatureNode(id, 'idle')]),
+            petNode(id, 'art art-pet'),
             el('div', { class: 'grow' }, [
               el('h3', { text: speciesName(id) }),
               meter(`Trust ${game.trust(id)}%`, game.trust(id), 100, '#f2a9b4', { hideValue: true }),
             ]),
             button('Visit', () => { selected = id; matching = false; draw() }, 'soft', {}),
-          ]),
+          ], 'pair'),
         ], 'tight')
         node.id = `friend-${id}`
         if (id === selected) node.style.background = '#fbdde2'
         return node
       }))])
-
-    wrap.replaceChildren(header, row([list, detail()], 'grow'))
   }
 
   function detail() {
@@ -53,39 +62,37 @@ export function FriendsScreen({ go, args, game }) {
     const tamed = game.isTamed(selected)
     const children = [
       row([
-        el('div', { class: 'tile', style: { width: '120px' } }, [creatureNode(selected, tamed ? 'happy' : 'peek')]),
+        petNode(selected, 'art art-pet'),
         el('div', { class: 'grow' }, [
           el('h2', { text: info.name }),
           text(info.bio),
-          el('div', { class: 'row', style: { flexWrap: 'wrap', gap: '5px' } },
-            (info.traits ?? []).map((t) => el('span', { class: 'pill sky', text: t }))),
+          el('div', { class: 'chips' }, (info.traits ?? []).map((t) => pill(t, 'sky'))),
         ]),
-      ]),
+      ], 'pair'),
       meter('Trust', game.trust(selected), 100, '#f2a9b4'),
     ]
 
     if (matching) {
-      children.push(el('h2', { text: 'Who should they go home with?' }))
-      children.push(text('Every one of these people would love them. A closer match simply makes for a sweeter story.'))
+      children.push(el('h2', { text: 'Who has been waiting for them?' }))
+      children.push(text('Their traits are the clue. A wrong guess costs nothing — they simply wait.'))
       children.push(el('div', { class: 'grid c3' }, game.friendCandidates(selected).map((person) => {
-        const score = game.matchScore(selected, person.id)
-        return card([
-          el('h3', { text: person.name, style: { textAlign: 'center' } }),
-          text(person.blurb),
-          el('div', { class: 'row center', style: { flexWrap: 'wrap', gap: '4px' } },
-            person.likes.map((l) => el('span', { class: 'pill', text: l }))),
-          el('span', { class: 'muted', text: score >= 0.95 ? 'A perfect fit' : score >= 0.65 ? 'A warm match' : 'A gentle match' }),
+        const node = card([
+          el('div', { class: 'friend-card' }, [
+            friendNode(person.id, 'art art-friend'),
+            el('h3', { text: person.name }),
+            el('div', { class: 'chips' }, person.likes.map((l) => pill(l))),
+          ]),
           button('They belong together', () => {
-            game.homeAnimal(selected, person.id)
-            matching = false
-            selected = ''
+            if (game.homeAnimal(selected, person.id)) { matching = false; selected = '' }
           }, 'primary', {}),
         ], 'tight')
+        node.id = `candidate-${person.id}`
+        return node
       })))
       children.push(button('Not yet', () => { matching = false; draw() }, 'soft', {}))
     } else if (tamed) {
-      children.push(text(`${info.name} is ready. Somewhere out there is a person who has been waiting for them.`))
-      const find = button('Find a forever friend', () => { matching = true; draw() }, 'primary', {})
+      children.push(text(`${info.name} is ready. Somewhere out there is the person who has been waiting.`))
+      const find = button('Find their person', () => { matching = true; draw() }, 'primary', {})
       find.id = 'find-friend'
       children.push(find)
     } else {
@@ -102,6 +109,25 @@ export function FriendsScreen({ go, args, game }) {
     return card(children, 'grow')
   }
 
+  function friendCard(person) {
+    const pet = person.pet
+    const reunited = pet && game.isHomed(pet)
+    const node = card([
+      el('div', { class: 'friend-card' }, [
+        friendNode(person.id, 'art art-friend'),
+        el('h3', { text: person.name }),
+        el('div', { class: 'friend-quote', text: `“${person.quote}”` }),
+        el('div', { class: 'chips' }, (person.interests ?? []).map((i) => pill(i))),
+        reunited
+          ? pill(`Together with ${speciesName(pet)}`, 'sage')
+          : pet ? pill('Still looking', 'red') : pill('Runs the photo walk', 'sky'),
+      ]),
+    ])
+    node.id = `person-${person.id}`
+    if (reunited) node.style.background = '#eef6e6'
+    return node
+  }
+
   draw()
-  return { node: wrap, scene: 'home' }
+  return { node: wrap, scene: 'room' }
 }

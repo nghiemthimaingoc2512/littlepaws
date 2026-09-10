@@ -52,11 +52,36 @@ html, body {
 }
 
 /* --- backdrop ---------------------------------------------------------- */
-.room { position: absolute; inset: 0; }
-.room svg, .room img { width: 100%; height: 100%; display: block; object-fit: cover; }
+/* The scene artwork fills the stage; a soft wash keeps UI readable over it
+   without hiding the picture. */
+.room {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  transition: background-image .25s ease;
+}
+.room::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(255,251,242,.34) 0 18%, rgba(255,251,242,0) 42%),
+    linear-gradient(to top, rgba(255,248,236,.42) 0 14%, rgba(255,248,236,0) 34%);
+}
+
+/* --- artwork ----------------------------------------------------------- */
+.art { display: block; }
+img.art { object-fit: contain; }
+.art-missing {
+  background: repeating-linear-gradient(45deg, #efe2cd 0 8px, #e7d6bd 8px 16px);
+  border-radius: 14px;
+}
+.art-pet { border-radius: 999px; box-shadow: var(--shadow-sm); background: var(--white); }
+.art-friend { border-radius: 18px; box-shadow: var(--shadow); }
 
 .screen { position: absolute; inset: 0; }
-.screen.page { padding: 84px 22px 100px; display: flex; flex-direction: column; gap: 12px; }
+.screen.page {
+  padding: 84px 22px 100px; display: flex; flex-direction: column; gap: 12px;
+  /* A wash so long text stays readable over the scene art. */
+  background: linear-gradient(rgba(255,251,243,.72), rgba(255,251,243,.82));
+}
 .scroll { overflow-y: auto; overflow-x: hidden; flex: 1; padding-right: 6px; }
 .scroll::-webkit-scrollbar { width: 8px; }
 .scroll::-webkit-scrollbar-thumb { background: rgba(107, 74, 50, .22); border-radius: 8px; }
@@ -122,7 +147,7 @@ button.ghost { background: transparent; border-color: transparent; box-shadow: n
   width: 46px; height: 46px; border-radius: 999px; overflow: hidden;
   background: var(--cream-deep); flex: none; display: grid; place-items: center;
 }
-.avatar svg, .avatar img { width: 150%; height: 150%; margin-top: 22%; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
 .player-name { font-size: 17px; font-weight: 800; line-height: 1.15; }
 .player-level { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-soft); font-weight: 700; }
 .xp-track { width: 92px; height: 9px; border-radius: 999px; background: var(--cream-deep); overflow: hidden; }
@@ -185,13 +210,7 @@ button.ghost { background: transparent; border-color: transparent; box-shadow: n
 }
 .rail-btn .icon { width: 28px; height: 28px; color: var(--ink); }
 
-.side-panel { position: absolute; right: 16px; top: 84px; width: 252px; display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
-.sign {
-  background: var(--cream); border: 2px solid var(--wood); border-radius: 18px;
-  padding: 10px 20px; text-align: center; font-size: 19px; font-weight: 800; line-height: 1.2;
-  box-shadow: var(--shadow-sm);
-}
-.sign .icon { width: 16px; height: 16px; margin-top: 2px; }
+.side-panel { position: absolute; right: 18px; top: 86px; width: 236px; }
 .todo { width: 100%; }
 .todo h3 { margin-bottom: 6px; }
 .todo-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
@@ -210,11 +229,12 @@ button.ghost { background: transparent; border-color: transparent; box-shadow: n
 .todo-claim .icon { width: 13px; height: 13px; }
 
 .pet-stage {
-  position: absolute; left: 50%; bottom: 104px; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  /* Placed over the rug in the room artwork rather than dead centre. */
+  position: absolute; left: 34%; bottom: 100px; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
   transition: bottom .28s cubic-bezier(.3,.8,.4,1);
 }
-.pet-stage.raised { bottom: 322px; }
+.pet-stage.raised { bottom: 318px; }
 .bubble {
   background: var(--white); border-radius: 16px; padding: 5px 11px; box-shadow: var(--shadow-sm);
   display: grid; place-items: center; margin-bottom: -26px; z-index: 2;
@@ -222,10 +242,9 @@ button.ghost { background: transparent; border-color: transparent; box-shadow: n
 .bubble .icon { width: 24px; height: 24px; }
 .pet-tap { border: none; background: transparent; box-shadow: none; padding: 0; }
 .pet-tap:active { transform: scale(.97); }
-.creature { display: block; }
-.creature svg, .creature img { width: 100%; height: 100%; display: block; }
-.pet-tap .creature { width: 252px; height: 252px; animation: breathe 3.6s ease-in-out infinite; }
-.pet-stage.raised .pet-tap .creature { width: 186px; height: 186px; }
+.pet-tap .art { height: 272px; width: auto; animation: breathe 3.8s ease-in-out infinite;
+  filter: drop-shadow(0 14px 16px rgba(107,74,50,.22)); }
+.pet-stage.raised .pet-tap .art { height: 186px; }
 @keyframes breathe { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
 .name-pill { background: rgba(255,253,247,.94); border-radius: 999px; padding: 4px 14px; font-size: 14.5px; font-weight: 700; box-shadow: var(--shadow-sm); }
 
@@ -253,7 +272,7 @@ button.ghost { background: transparent; border-color: transparent; box-shadow: n
 .grid.c5 { grid-template-columns: repeat(5, 1fr); }
 
 .tile { display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
-.tile .creature { width: 86px; height: 86px; }
+.tile .art { width: 92px; height: 92px; }
 .tile.locked { filter: grayscale(1) opacity(.55); }
 .swatch { width: 100%; height: 46px; border-radius: 14px; }
 
@@ -299,13 +318,53 @@ input[type="text"] {
 input[type="text"]:focus { outline: none; border-color: var(--pink); }
 .starter-row { display: flex; gap: 16px; justify-content: center; }
 .starter { width: 264px; cursor: pointer; }
-.starter .creature { width: 160px; height: 160px; margin: 0 auto; }
+.starter .art { height: 190px; width: auto; margin: 0 auto; }
 .starter.selected { background: #fbdde2; }
 
 /* --- rescue mini-game --------------------------------------------------- */
 .rescue-body { display: flex; gap: 24px; flex: 1; }
 .rescue-left { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.rescue-left .creature { width: 230px; height: 230px; }
+.rescue-left .art { width: 210px; height: 210px; }
 .rescue-right { flex: 1.1; display: flex; flex-direction: column; gap: 10px; }
 .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .choice-grid button { padding: 14px 10px; }
+
+/* --- friends ------------------------------------------------------------ */
+.friend-card { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.friend-card img.art-friend {
+  width: 100%; max-width: 200px; height: 186px;
+  object-fit: cover; object-position: 50% 26%;
+}
+.friend-card.tall img.art-friend { height: 300px; object-position: 50% 12%; }
+.friend-quote { font-style: italic; font-size: 13.5px; color: var(--ink-soft); text-align: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+
+.pair { display: flex; align-items: center; gap: 10px; }
+.pair img.art-pet { width: 64px; height: 64px; }
+
+/* --- mini-games --------------------------------------------------------- */
+.play-field {
+  position: relative; flex: 1; min-height: 300px; border-radius: var(--r-lg);
+  background: rgba(255, 253, 247, .18); overflow: hidden; box-shadow: var(--shadow);
+}
+.target {
+  position: absolute; border: 3px solid rgba(255,255,255,.95); padding: 9px;
+  background: rgba(255,253,247,.92); border-radius: 999px; line-height: 0;
+  cursor: pointer; box-shadow: 0 6px 14px rgba(107,74,50,.24);
+  transition: transform .12s ease;
+  animation: pop-in .2s cubic-bezier(.2,1.3,.4,1);
+}
+@keyframes pop-in { from { transform: scale(.4); opacity: 0 } to { transform: none; opacity: 1 } }
+.target:active { transform: scale(.88); }
+.target .icon { width: 100%; height: 100%; }
+.bubble-target { color: #8fc7e8; }
+.treat-target { color: var(--gold); }
+.play-hud { display: flex; align-items: center; gap: 12px; width: 240px; flex: none; }
+.play-hud .meter { flex: 1; }
+
+.activity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.activity {
+  display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+  text-align: left; cursor: pointer;
+}
+.activity img.art-pet, .activity img.art-friend { width: 74px; height: 74px; }

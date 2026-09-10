@@ -1,6 +1,6 @@
-// First run: name yourself, choose the one pet you will raise, make the promise.
+// First run: your name, then your cat's name. The artwork gives you one cat.
 import { el, card, button, text } from '../ui.js'
-import { creatureNode } from '../art.js'
+import { ownerNode } from '../art.js'
 import { starterIds, getSpecies } from '../data.js'
 
 export function OnboardingScreen({ go, game }) {
@@ -10,7 +10,7 @@ export function OnboardingScreen({ go, game }) {
 
   const wrap = el('div', { class: 'onboard', id: 'onboarding' })
   const draw = () => {
-    wrap.replaceChildren(step === 0 ? welcome() : step === 1 ? choose() : promise())
+    wrap.replaceChildren(step === 0 ? welcome() : promise())
   }
 
   function welcome() {
@@ -22,28 +22,11 @@ export function OnboardingScreen({ go, game }) {
       field,
       button('Begin', () => {
         ownerName = field.value.trim() || 'Friend'
+        speciesId = starterIds()[0]
         step = 1
         draw()
       }, 'primary', {}),
     ], 'onboard-card')
-  }
-
-  function choose() {
-    return el('div', { class: 'col', style: { alignItems: 'center', gap: '16px' } }, [
-      el('h1', { text: 'Choose your one pet' }),
-      text('You will raise this friend for the whole journey. Pick the one you want to wake up to.'),
-      el('div', { class: 'starter-row' }, starterIds().map((id) => {
-        const info = getSpecies(id)
-        return card([
-          creatureNode(id, 'happy'),
-          el('h2', { text: info.name }),
-          el('div', { class: 'row center', style: { flexWrap: 'wrap', gap: '5px' } },
-            (info.traits ?? []).map((t) => el('span', { class: 'pill sage', text: t }))),
-          text(info.bio),
-          button('Choose', () => { speciesId = id; step = 2; draw() }, 'primary', {}),
-        ], `starter ${speciesId === id ? 'selected' : ''}`)
-      })),
-    ])
   }
 
   function promise() {
@@ -53,12 +36,11 @@ export function OnboardingScreen({ go, game }) {
       placeholder: `Your ${String(info.kind ?? 'pet').toLowerCase()}'s name`,
     })
     return card([
-      creatureNode(speciesId, 'happy'),
+      ownerNode('hug', 'art'),
       el('h1', { text: 'Give them a name', style: { fontSize: '30px' } }),
       field,
       text('I promise to feed them, keep them clean, play with them, and come back to them.'),
       el('div', { class: 'row center' }, [
-        button('Choose again', () => { step = 1; draw() }, 'soft', {}),
         button('I promise', () => {
           game.newGame(speciesId, field.value.trim() || info.kind || 'Pet', ownerName)
           game.dailyCheck()
@@ -69,5 +51,5 @@ export function OnboardingScreen({ go, game }) {
   }
 
   draw()
-  return { node: wrap, scene: 'home', chrome: false }
+  return { node: wrap, scene: 'room', chrome: false }
 }

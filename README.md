@@ -31,13 +31,14 @@ Both targets read the same content from `data/*.json` and follow the same rules;
 
 ```bash
 cd web && npm run dev &                               # the browser suite needs it running
-cd web && npm run test                                # 66 interaction checks in Chromium
+cd web && npm run test                                # 77 interaction checks in Chromium
 
 godot --headless --path . --import                    # first time only
-godot --headless --path . res://tests/SmokeTest.tscn   # 102 rule checks
+godot --headless --path . res://tests/SmokeTest.tscn   # 105 rule checks
 ```
 
-The browser suite plays the game for real: it finishes onboarding, opens and
+The browser suite plays the game for real, and asserts the uploaded images
+actually decode rather than merely being referenced: it finishes onboarding, opens and
 closes the care sheet, feeds and plays and checks the meters moved, collects a
 daily task, visits every tab, buys and wears an accessory, completes a rescue,
 tames and re-homes the animal, collects a gift from the inbox, and reloads to
@@ -65,6 +66,7 @@ xvfb-run -a godot --path . res://tests/Screenshot.tscn
 | Floating chrome and routing | `scenes/Main.gd` |
 | Screens | `scenes/screens/*.gd` |
 | Shared widgets and vector icons | `ui/*.gd` |
+| Artwork pipeline | `tools/prepare_art.py` |
 | Tests | `tests/` |
 
 The home screen is the room: shortcuts down the left (Daily, Missions, Shop,
@@ -79,15 +81,19 @@ still needs help, Friends when a rescue is ready to be matched, and the inbox
 when a letter is unread.
 
 **Chapters 1–3** are pet care: the first day, growing up, and health and
-grooming. **Chapters 4–7** are rescue regions — Cozy Alley, Bloom Meadow,
-Misty Forest, Frost Bay — with three animals each.
+grooming. **Chapters 4–6** take you out to Paw & Co. and Little Paws Park to
+find the five animals living there.
 
-A rescued animal arrives frightened. You raise its trust in the **Sanctuary**,
-then choose which of three people it goes home with. Every match is a happy
-ending; a closer one simply pays a little better. Homed animals are recorded in
-the **Library** with their story and their person.
+A rescued animal arrives frightened. You raise its trust under **Friends**, then
+work out which of three people has been waiting for it — their traits and
+interests are the clue. Guessing wrong costs nothing; the animal simply waits.
+Getting it right reunites the pair from the artwork.
 
-**21 badges**, three currencies, outfits for you, accessories for your pet, and
+**Play** holds three casual activities — Bubble Bath, Snack Toss and Fetch in
+the Park — plus whichever rescue missions are open. Each pays coins and feeds
+the same bond, XP and daily-list plumbing as ordinary care.
+
+**20 badges**, three currencies, outfits for you, accessories for your pet, and
 room decor. Coins come from chapters, the daily list and rewarded video; gems
 come from badges and forever homes; hearts come from clearing the day's list and
 from finding an animal its person. None of the three gates a chapter.
@@ -96,12 +102,13 @@ A **daily To Do card** asks for five small things — care, play, decorate, meet
 friends, be happy — and the **inbox** collects thank-you notes, badge receipts
 and gifts as you earn them.
 
-## Adding your own art
+## Artwork
 
-The game draws hand-made placeholder creatures until real artwork exists, so it
-never looks unfinished. Drop your files into `assets/` and describe them in
-`assets/manifest.json` — see **[docs/ART.md](docs/ART.md)** for the exact file
-names and sprite-sheet grids.
+Every character, pet and background is the uploaded artwork in `/assets` —
+nothing is drawn in code. `tools/prepare_art.py` restores the alpha that was
+flattened out of the sheets, slices the 15 owner poses and the six friend cards,
+cuts an avatar for each animal, and compresses the backgrounds. See
+**[docs/ART.md](docs/ART.md)**.
 
 ## More
 

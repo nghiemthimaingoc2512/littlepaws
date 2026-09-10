@@ -115,44 +115,53 @@ func _test_chapter_one() -> void:
 
 func _test_rescue_flow() -> void:
 	section("rescue, taming and homing")
-	check(not GameState.is_rescued("hamster"), "hamster starts undiscovered")
+	check(not GameState.is_rescued("kitten_grey"), "the kitten starts undiscovered")
 
-	GameState.rescue("hamster")
-	check(GameState.is_rescued("hamster"), "rescue records the animal")
-	check(GameState.trust("hamster") == 0, "a new rescue starts at zero trust")
-	check(GameState.sanctuary_ids().has("hamster"), "the rescue waits in the sanctuary")
+	GameState.rescue("kitten_grey")
+	check(GameState.is_rescued("kitten_grey"), "rescue records the animal")
+	check(GameState.trust("kitten_grey") == 0, "a new rescue starts at zero trust")
+	check(GameState.sanctuary_ids().has("kitten_grey"), "the rescue waits in the sanctuary")
 	check(GameState.has_badge("rescue_1"), "first rescue awards a badge")
 
-	GameState.rescue("hamster")
+	GameState.rescue("kitten_grey")
 	check(GameState.rescued_count() == 1, "rescuing twice does not duplicate")
 
 	stock_pantry()
 	for i in 40:
 		clear_cooldowns()
 		stock_pantry()
-		GameState.do_tame("hamster", "tame_feed")
-		GameState.do_tame("hamster", "tame_soothe")
-		if GameState.is_tamed("hamster"):
+		GameState.do_tame("kitten_grey", "tame_feed")
+		GameState.do_tame("kitten_grey", "tame_soothe")
+		if GameState.is_tamed("kitten_grey"):
 			break
-	check(GameState.is_tamed("hamster"), "care raises trust to fully tamed")
-	check(GameState.trust("hamster") == 100, "trust caps at 100")
+	check(GameState.is_tamed("kitten_grey"), "care raises trust to fully tamed")
+	check(GameState.trust("kitten_grey") == 100, "trust caps at 100")
 
-	var candidates := GameState.friend_candidates("hamster")
+	var candidates := GameState.friend_candidates("kitten_grey")
 	check(candidates.size() == 3, "three friends are offered")
-	check(GameState.friend_candidates("hamster") == candidates, "the same offer is shown twice")
+	check(GameState.friend_candidates("kitten_grey") == candidates, "the same offer is shown twice")
 
 	var coins_before := GameState.coins()
-	var npc_id := String((candidates[0] as Dictionary).get("id", ""))
-	check(GameState.home_animal("hamster", npc_id), "homing succeeds once tamed")
-	check(GameState.is_homed("hamster"), "the animal is recorded as homed")
+	var npc_id := GameState.destined_friend("kitten_grey")
+	check(npc_id != "", "the artwork names the person this animal belongs with")
+	var wrong_id := ""
+	for candidate: Dictionary in candidates:
+		if String(candidate.get("id", "")) != npc_id:
+			wrong_id = String(candidate["id"])
+			break
+	check(not GameState.home_animal("kitten_grey", wrong_id), "the wrong person is turned down")
+	check(GameState.homed_count() == 0, "and nothing is recorded")
+	check(GameState.home_animal("kitten_grey", npc_id), "homing succeeds with the right person")
+	check(GameState.is_homed("kitten_grey"), "the animal is recorded as homed")
 	check(GameState.coins() > coins_before, "homing pays out")
-	check(not GameState.sanctuary_ids().has("hamster"), "a homed animal leaves the sanctuary")
-	check(not GameState.home_animal("hamster", npc_id), "an animal cannot be homed twice")
+	check(not GameState.sanctuary_ids().has("kitten_grey"), "a homed animal leaves the sanctuary")
+	check(not GameState.home_animal("kitten_grey", npc_id), "an animal cannot be homed twice")
 	check(GameState.has_badge("homed_1"), "first home awards a badge")
 
 	# An untamed rescue cannot be homed.
-	GameState.rescue("duckling")
-	check(not GameState.home_animal("duckling", npc_id), "an untamed animal cannot be homed")
+	GameState.rescue("cat_ginger")
+	check(not GameState.home_animal("cat_ginger", GameState.destined_friend("cat_ginger")),
+		"an untamed animal cannot be homed")
 
 
 func _test_economy() -> void:
@@ -259,7 +268,8 @@ func _test_notifications() -> void:
 	check(GameState.missions_have_news(), "a dot appears when a badge is earned afterwards")
 	(GameState.save["badges"] as Dictionary).erase("_probe")
 
-	GameState.save["chapter"] = 3  # Cozy Alley, a rescue chapter
+	# Little Paws Park: a rescue chapter whose animals this run has not found.
+	GameState.save["chapter"] = 4
 	check(not GameState.available_missions().is_empty(), "a rescue chapter offers missions")
 	check(GameState.events_have_news(), "a dot appears on Events while animals need help")
 

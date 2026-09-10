@@ -1,7 +1,7 @@
 // Turns the single-file production build into a page the Artifact host can
 // publish: it supplies its own <!doctype>/<html>/<head>/<body> skeleton, so we
 // hand it the title, styles and body content only.
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 
 const distDir = path.resolve(import.meta.dirname, '..', 'dist')
@@ -24,7 +24,30 @@ if (!styles.length) throw new Error('make-artifact: no inlined stylesheet — di
 if (!scripts.length) throw new Error('make-artifact: no inlined script — did vite-plugin-singlefile run?')
 
 // Mount point first, script last, so the game boots against a ready DOM.
-const out = [`<title>${title}</title>`, ...styles, body.trim(), ...scripts].join('\n') + '\n' 
+let out = [`<title>${title}</title>`, ...styles, body.trim(), ...scripts].join('\n') + '\n'
+
+// Artwork lives in web/public and is copied beside the bundle by a normal
+// build, but an artifact is a single file: inline every piece it references.
+const MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp', '.svg': 'image/svg+xml' }
+const publicDir = path.resolve(import.meta.dirname, '..', 'public')
+const referenced = [...new Set(out.match(/\/art\/[\w/.-]+?\.(?:png|jpe?g|webp|svg)/g) ?? [])]
+let inlined = 0
+for (const url of referenced) {
+  const file = path.join(publicDir, url.replace(/^\//, ''))
+  if (!existsSync(file)) {
+    console.warn(`make-artifact: referenced but missing — ${url}`)
+    continue
+  }
+  const mime = MIME[path.extname(file).toLowerCase()] ?? 'application/octet-stream'
+  const data = `data:${mime};base64,${readFileSync(file).toString('base64')}`
+  out = out.split(url).join(data)
+  inlined += 1
+}
+if (inlined !== referenced.length) {
+  throw new Error(`make-artifact: ${referenced.length - inlined} artwork files could not be inlined`)
+}
+console.log(`inlined ${inlined} artwork files`)
 const target = path.join(distDir, 'artifact.html')
 writeFileSync(target, out)
 console.log(`wrote ${target} (${(out.length / 1024).toFixed(1)} kB)`)

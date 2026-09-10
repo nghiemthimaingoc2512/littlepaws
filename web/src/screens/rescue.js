@@ -1,7 +1,7 @@
 // A rescue mission. The animal shows what it needs; you answer.
 // There is no timer and no failure — a wrong guess costs nothing but a nudge.
 import { el, row, card, button, text, pill, icon, meter } from '../ui.js'
-import { creatureNode } from '../art.js'
+import { petNode } from '../art.js'
 import { getSpecies, rescuableIds } from '../data.js'
 
 const ROUNDS = 5
@@ -58,7 +58,7 @@ export function RescueScreen({ go, args, game }) {
     if (session.finished) {
       wrap.replaceChildren(el('div', { class: 'onboard' }, [
         card([
-          el('div', { class: 'tile' }, [creatureNode(speciesId, 'happy')]),
+          el('div', { class: 'tile' }, [petNode(speciesId, 'art art-pet')]),
           el('h1', { text: `${info.name} is safe` }),
           text(info.bio), text(info.hint),
           row([
@@ -74,7 +74,7 @@ export function RescueScreen({ go, args, game }) {
       row([icon('paw'), el('h1', { text: `Rescue: ${info.name}` })], 'head'),
       el('div', { class: 'rescue-body' }, [
         el('div', { class: 'rescue-left' }, [
-          creatureNode(speciesId, 'peek'),
+          petNode(speciesId, 'art art-pet'),
           meter('Calm', session.round, ROUNDS, '#a8cc8c', { hideValue: true }),
           el('span', { class: 'muted', text: `Step ${Math.min(session.round + 1, ROUNDS)} of ${ROUNDS}` }),
         ]),
@@ -99,5 +99,5 @@ export function RescueScreen({ go, args, game }) {
   }
 
   draw()
-  return { node: wrap, scene: info.region === 'alley' ? 'mall' : 'home' }
+  return { node: wrap, scene: info.region ?? 'room' }
 }

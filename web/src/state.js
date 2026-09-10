@@ -72,6 +72,29 @@ export const DAILY_TASKS = [
 export const DAILY_CLEAR_HEARTS = 1
 export const DAILY_CLEAR_GEMS = 2
 
+/**
+ * Casual activities. Each is a short tap game with no timer and no failure —
+ * you finish when you finish — and each pays out through the same plumbing as
+ * ordinary care, so bond, XP, the daily list and badges all keep working.
+ */
+export const ACTIVITIES = {
+  bath: {
+    label: 'Bubble Bath', icon: 'drop', scene: 'room', targets: 12,
+    stat: 'clean', amount: 34, coins: 45, bond: 2, task: 'care',
+    blurb: 'Pop every bubble and she comes out warm and fluffy.',
+  },
+  snack: {
+    label: 'Snack Toss', icon: 'bowl', scene: 'room', targets: 12,
+    stat: 'food', amount: 30, coins: 45, bond: 2, task: 'care',
+    blurb: 'Catch the treats before they land.',
+  },
+  fetch: {
+    label: 'Fetch in the Park', icon: 'paw', scene: 'park', targets: 10,
+    stat: 'mood', amount: 32, coins: 60, bond: 3, task: 'play',
+    blurb: 'Throw, chase, repeat. Nobody keeps score.',
+  },
+}
+
 export const AD_REWARD_COINS = 60
 export const AD_COOLDOWN_SEC = 90
 export const AD_DAILY_LIMIT = 12
@@ -343,7 +366,7 @@ class GameState extends EventTarget {
     this._advanceGoals('action', actionId)
     this._advanceGoals('care_total', '')
 
-    this.posePet(action.pose)
+    this.posePet(actionId)
     this.toast(action.line.replace('%s', this.petName()))
 
     if (this.stage() > beforeStage) {
@@ -352,6 +375,25 @@ class GameState extends EventTarget {
         'stage')
     }
     this._startCooldown(actionId, action.cooldown)
+    this._afterChange()
+    return true
+  }
+
+  /** Pays out a finished activity. Same rewards path as a care action. */
+  finishActivity(activityId) {
+    const activity = ACTIVITIES[activityId]
+    if (!activity) return false
+    const stats = this.save.pet.stats
+    stats[activity.stat] = clamp((stats[activity.stat] ?? 70) + activity.amount, COMFORT_FLOOR, 100)
+    this.save.pet.bond = clamp(this.bond() + activity.bond, 0, 100)
+    this.save.pet.xp += 12
+    this.addCoins(activity.coins)
+    this._bump('care_total')
+    this._bump('player_xp', 15)
+    this._bump(`activity_${activityId}`)
+    this._taskBump(activity.task)
+    this._advanceGoals('care_total', '')
+    this.toast(`${activity.label} done. +${activity.coins} coins`)
     this._afterChange()
     return true
   }
@@ -568,19 +610,26 @@ class GameState extends EventTarget {
     return true
   }
 
-  /** Three candidates, chosen deterministically so the offer is stable. */
+  /** The person this animal has been waiting for, per the artwork. */
+  destinedFriend(speciesId) { return getSpecies(speciesId).friend ?? '' }
+
+  /**
+   * Three people to choose between, always including the right one, in a
+   * stable order so the offer does not shuffle while you are deciding.
+   */
   friendCandidates(id) {
-    let seed = 0
-    for (const ch of id) seed += ch.charCodeAt(0)
-    const pool = [...Data.npcs]
+    const destined = this.destinedFriend(id)
+    const pool = Data.npcs.filter((n) => n.id !== destined)
+    let cursor = [...id].reduce((sum, ch) => sum + ch.charCodeAt(0), 0)
     const picked = []
-    let cursor = seed
-    while (picked.length < Math.min(3, pool.length)) {
+    while (picked.length < 2 && picked.length < pool.length) {
       cursor = (cursor * 1103515245 + 12345) & 0x7fffffff
       const candidate = pool[cursor % pool.length]
       if (!picked.includes(candidate)) picked.push(candidate)
     }
-    return picked
+    const chosen = [...picked, Data.npcs.find((n) => n.id === destined)].filter(Boolean)
+    // Stable order: sort by id so the right answer is not always in one slot.
+    return chosen.sort((a, b) => (a.id < b.id ? -1 : 1))
   }
 
   matchScore(speciesId, npcId) {
@@ -591,8 +640,17 @@ class GameState extends EventTarget {
     return clamp(0.4 + 0.3 * shared, 0, 1)
   }
 
+  /**
+   * Reuniting is a guess, but never a punished one: the wrong person costs
+   * nothing and the animal simply waits for you to try again.
+   */
   homeAnimal(speciesId, npcId) {
     if (!this.isTamed(speciesId) || this.isHomed(speciesId)) return false
+    const destined = this.destinedFriend(speciesId)
+    if (destined && npcId !== destined) {
+      this.toast(`${dataNpc(npcId).name} adores them, but they did not settle. Try someone else.`)
+      return false
+    }
     const record = this.save.library[speciesId]
     record.friend = npcId
     record.homedAt = now()
@@ -708,6 +766,9 @@ class GameState extends EventTarget {
   }
   friendsHaveNews() { return this.sanctuaryIds().some((id) => this.isTamed(id)) }
   eventsHaveNews() { return this.availableMissions().length > 0 }
+
+  /** Which backdrop a species belongs to. */
+  sceneFor(speciesId) { return getSpecies(speciesId).region ?? 'room' }
 
   availableMissions() {
     const chapter = this.currentChapter()

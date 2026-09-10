@@ -51,6 +51,6 @@ export function DailyScreen({ game }) {
         pill(`Day ${game.streak()} in a row`, 'pink')], 'head'),
       el('div', { class: 'scroll' }, [row([list, side], 'grow')]),
     ]),
-    scene: 'home',
+    scene: 'room',
   }
 }

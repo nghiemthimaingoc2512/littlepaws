@@ -64,19 +64,15 @@ section('onboarding')
 check(await page.locator('#onboarding').isVisible(), 'onboarding screen renders')
 await page.fill('#owner-name', 'Ngoc')
 await page.getByRole('button', { name: 'Begin' }).click()
-check(await page.locator('.starter-row').isVisible(), 'starter choice appears after Begin')
-check((await page.locator('.starter').count()) === 3, 'three starters are offered')
+check(await page.locator('#pet-name').isVisible(), 'naming step appears after Begin')
 await page.screenshot({ path: `${SHOTS}/01-onboarding.png` })
-
-await page.locator('.starter').first().getByRole('button', { name: 'Choose' }).click()
-check(await page.locator('#pet-name').isVisible(), 'naming step appears after choosing')
-await page.fill('#pet-name', 'Muffin')
+await page.fill('#pet-name', 'Mochi')
 await page.getByRole('button', { name: 'I promise' }).click()
 await page.waitForSelector('#home-screen')
 
 const start = await state()
 check(start !== null, 'a new game was created')
-check(start.owner === 'Ngoc' && start.pet === 'Muffin', 'names were stored')
+check(start.owner === 'Ngoc' && start.pet === 'Mochi', 'names were stored')
 
 // --- home screen -----------------------------------------------------------
 section('home screen')
@@ -85,8 +81,23 @@ check(await page.locator('.player-card').isVisible(), 'player card renders')
 check((await page.locator('.coin-pill').count()) === 3, 'three currency bars render')
 check((await page.locator('.nav-item').count()) === 6, 'six navigation tabs render')
 check((await page.locator('.rail-btn').count()) === 4, 'four left-rail shortcuts render')
+check(!(await page.locator('.sign').count()), 'the decorative signboard is gone')
 check(await page.locator('.todo').isVisible(), 'the To Do card renders')
-check(await page.locator('#pet-tap svg, #pet-tap img').first().isVisible(), 'the pet is drawn')
+const hero = page.locator('#pet-tap img')
+check(await hero.isVisible(), 'the pet artwork is on screen')
+// A normal build serves /art/...; the single-file artifact inlines the same
+// bytes as a data URI. Both count as using the uploaded artwork.
+const heroSrc = await hero.getAttribute('src')
+check(heroSrc.startsWith('/art/') || heroSrc.startsWith('data:image/'),
+  'the hero uses the uploaded artwork')
+check(await hero.evaluate((n) => n.complete && n.naturalWidth > 0),
+  'the hero image actually decoded in the browser')
+const backdropImage = await page.locator('#backdrop').evaluate(
+  (n) => getComputedStyle(n).backgroundImage)
+check(backdropImage.includes('/art/bg/room') || backdropImage.includes('data:image/'),
+  'the room backdrop is the uploaded background')
+check(await page.locator('.player-card img').evaluate((n) => n.naturalWidth > 0),
+  'the player portrait decoded')
 await page.screenshot({ path: `${SHOTS}/02-home.png` })
 
 // --- the care sheet opens and closes ---------------------------------------
@@ -155,7 +166,7 @@ for (const [tab, selector] of [
 }
 for (const [rail, selector] of [
   ['daily', '#daily-screen'], ['missions', '#missions-screen'],
-  ['events', '#events-screen'], ['shop', '#shop-screen'],
+  ['activities', '#activities-screen'], ['shop', '#shop-screen'],
 ]) {
   await page.click('#nav-home')
   await page.waitForSelector('#home-screen')
@@ -195,7 +206,7 @@ await page.screenshot({ path: `${SHOTS}/04-shop.png` })
 section('rescue mission')
 await page.evaluate(() => { window.__littlepaws.game.save.chapter = 3; window.__littlepaws.game.persist() })
 await page.click('#nav-home'); await page.waitForSelector('#home-screen')
-await page.click('#rail-events'); await page.waitForSelector('#events-screen')
+await page.click('#rail-activities'); await page.waitForSelector('#activities-screen')
 check((await page.getByRole('button', { name: 'Go find them' }).count()) > 0, 'a rescue chapter offers missions')
 await page.getByRole('button', { name: 'Go find them' }).first().click()
 await page.waitForSelector('#rescue-screen')
@@ -251,11 +262,49 @@ await page.waitForTimeout(200)
 await page.click('#find-friend')
 await page.waitForTimeout(250)
 check((await page.getByRole('button', { name: 'They belong together' }).count()) === 3,
-  'three adopters are offered')
-await page.getByRole('button', { name: 'They belong together' }).first().click()
-await page.waitForTimeout(300)
-check(await page.evaluate(() => window.__littlepaws.game.homedCount() === 1), 'the animal finds a home')
+  'three people are offered')
+check(await page.locator('#friends-screen img.art-friend').first().evaluate((n) => n.naturalWidth > 0),
+  'the friend artwork decoded')
 await page.screenshot({ path: `${SHOTS}/07-friends.png` })
+
+const pair = await page.evaluate(() => {
+  const g = window.__littlepaws.game
+  const id = g.sanctuaryIds()[0]
+  const right = g.destinedFriend(id)
+  const wrong = g.friendCandidates(id).find((n) => n.id !== right).id
+  return { id, right, wrong }
+})
+await page.locator(`#candidate-${pair.wrong}`).getByRole('button').click()
+await page.waitForTimeout(300)
+check(await page.evaluate(() => window.__littlepaws.game.homedCount() === 0),
+  'the wrong person does not take the animal home')
+check(await page.locator('.toast.show').isVisible(), 'and the game says so gently')
+await page.locator(`#candidate-${pair.right}`).getByRole('button').click()
+await page.waitForTimeout(300)
+check(await page.evaluate(() => window.__littlepaws.game.homedCount() === 1),
+  'the right person reunites with them')
+await dismissModals()
+
+// --- a casual activity ---------------------------------------------------------
+section('mini-game')
+await page.click('#nav-home'); await page.waitForSelector('#home-screen')
+await page.click('#rail-activities'); await page.waitForSelector('#activities-screen')
+check((await page.locator('.activity-grid .card').count()) >= 3, 'the Play hub offers activities')
+await page.locator('#activity-bath').getByRole('button', { name: 'Start' }).click()
+await page.waitForSelector('#play-field')
+check((await page.locator('.target').count()) === 3, 'targets appear to tap')
+
+const beforePlay2 = await state()
+for (let i = 0; i < 40 && (await page.locator('.target').count()); i += 1) {
+  await page.locator('.target').first().click()
+  await page.waitForTimeout(40)
+}
+await page.waitForTimeout(300)
+const afterPlay2 = await state()
+check(afterPlay2.coins > beforePlay2.coins, 'finishing an activity pays coins')
+check(afterPlay2.clean > beforePlay2.clean, 'a bath actually cleans your cat')
+check(afterPlay2.careTotal > beforePlay2.careTotal, 'it counts as care')
+await page.screenshot({ path: `${SHOTS}/09-minigame.png` })
 await dismissModals()
 
 // --- inbox --------------------------------------------------------------------

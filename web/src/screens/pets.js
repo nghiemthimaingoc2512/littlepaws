@@ -1,6 +1,6 @@
 // The collection: every animal in the world, discovered or still unknown.
 import { el, row, card, button, text, pill, icon } from '../ui.js'
-import { creatureNode } from '../art.js'
+import { petNode } from '../art.js'
 import { getSpecies, rescuableIds, npc as dataNpc } from '../data.js'
 
 let selected = ''
@@ -14,7 +14,7 @@ export function PetsScreen({ go, game }) {
     const info = getSpecies(id)
     const node = card([
       el('div', { class: `tile ${known ? '' : 'locked'}` }, [
-        creatureNode(id, 'idle'),
+        petNode(id, 'art art-pet'),
         el('h3', { text: known ? info.name : '? ? ?' }),
         known
           ? pill(isCompanion ? 'Companion' : game.isHomed(id) ? 'Homed' : 'In sanctuary', 'sage')
@@ -34,7 +34,7 @@ export function PetsScreen({ go, game }) {
     const info = getSpecies(selected)
     const entry = game.entry(selected)
     const children = [
-      el('div', { class: 'tile' }, [creatureNode(selected, 'happy'), el('h2', { text: info.name })]),
+      el('div', { class: 'tile' }, [petNode(selected, 'art art-pet'), el('h2', { text: info.name })]),
       pill(String(info.rarity ?? 'common'), 'sky'),
       text(info.bio),
       el('div', { class: 'row center', style: { flexWrap: 'wrap', gap: '5px' } },
@@ -64,11 +64,11 @@ export function PetsScreen({ go, game }) {
         el('div', { class: 'scroll grow' }, [
           el('div', { class: 'grid c4' }, [tile(game.petSpecies(), true), ...all.map((id) => tile(id, false))]),
         ]),
-        el('div', { style: { width: '330px', flex: 'none' } }, [detail()]),
+        el('div', { style: { width: '330px', flex: 'none', alignSelf: 'flex-start' } }, [detail()]),
       ], 'grow'),
     )
   }
 
   draw()
-  return { node: wrap, scene: 'home' }
+  return { node: wrap, scene: 'room' }
 }

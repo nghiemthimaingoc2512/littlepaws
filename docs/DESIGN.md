@@ -33,11 +33,17 @@ the first day, growing up, health and grooming. Chapters 4–7 are rescue region
 with three animals each, gated behind homing the ones you already saved, so
 collecting never outruns caring.
 
-**Rescue → tame → home.** A mission is five rounds of reading what a frightened
-animal needs. The animal then enters the Sanctuary at zero trust; three taming
-actions raise it to 100; then you pick which of three people it goes home with.
-The pair is recorded in the Library with a story. This is the emotional payoff
-and the reason the collection is worth filling.
+**Find → tame → reunite.** A mission is five rounds of reading what a
+frightened animal needs. The animal then waits under Friends at zero trust;
+three taming actions raise it to 100; then you work out which of three people
+has been waiting for it, using their traits and interests as the clue. A wrong
+guess costs nothing at all — the animal simply waits — so the puzzle has a right
+answer without having a punishment. This is the emotional payoff and the reason
+the collection is worth filling.
+
+**Activities.** Three tap games with no timer and no failure: you finish when
+you finish. They exist so "play with your pet" is something you do rather than
+a button you press, and they pay out through the same rewards path as care.
 
 ## The screen
 
@@ -92,12 +98,15 @@ Rewarded video: 90-second cooldown, 12 per day. See
 
 ## Content
 
-15 species (3 starters, 12 rescues), 7 chapters, 21 badges, 8 adoptable NPCs,
-6 foods, and 4 cosmetics in each of three categories. All of it lives in
-`data/*.json` — text, balance and new animals need no code.
+Six animals (your calico plus five to find), six human friends, six chapters,
+20 badges, three casual activities, six foods, and four cosmetics in each of
+three categories. All of it lives in `data/*.json` — text, balance and new
+animals need no code.
 
-Every icon in the interface is drawn in code (`ui/IconView.gd`), so the game
-ships with no icon assets and nothing to re-export when the palette changes.
+The cast comes from the artwork rather than the other way round. `npc.png` is a
+page of six people shown with their pets, so the game's collection loop is
+built on that: each animal you find has one person who has been waiting for it,
+and reuniting the pair is the payoff the picture already depicts.
 
 ## Architecture
 

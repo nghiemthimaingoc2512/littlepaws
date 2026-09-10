@@ -35,6 +35,6 @@ export function MailScreen({ game }) {
             text('Letters arrive when you earn a badge, finish a chapter, or find an animal its forever home.')]),
       ]),
     ]),
-    scene: 'home',
+    scene: 'room',
   }
 }

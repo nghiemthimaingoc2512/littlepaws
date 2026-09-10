@@ -1,10 +1,44 @@
 [
-  {"id": "mai", "name": "Mai", "color": "#F4B9BC", "likes": ["Cuddly", "Sleepy", "Gentle"], "blurb": "Runs the flower stall. Wants someone to nap on the counter while she works."},
-  {"id": "hana", "name": "Hana", "color": "#E7C6E6", "likes": ["Shy", "Graceful", "Tidy"], "blurb": "A quiet illustrator. Draws best with something small and calm beside her."},
-  {"id": "linh", "name": "Linh", "color": "#BFE0CE", "likes": ["Playful", "Sunny", "Silly"], "blurb": "Never sits still. Needs a friend who can keep up with her at the park."},
-  {"id": "kien", "name": "Kien", "color": "#B9C7EE", "likes": ["Loyal", "Brave", "Proud"], "blurb": "Works the late shift at the bakery. Walks home alone and would rather not."},
-  {"id": "nam", "name": "Nam", "color": "#F2C761", "likes": ["Clever", "Curious", "Chatty"], "blurb": "Fixes old radios. Talks to himself, and would love an answer for once."},
-  {"id": "an", "name": "An", "color": "#E4B893", "likes": ["Musical", "Alert", "Curious"], "blurb": "Music student. Practices scales at 6am and needs a patient audience."},
-  {"id": "thu", "name": "Thu", "color": "#C6D6E6", "likes": ["Calm", "Gentle", "Sleepy"], "blurb": "A nurse coming off long nights. Home is too quiet lately."},
-  {"id": "bao", "name": "Bao", "color": "#D8C3AE", "likes": ["Brave", "Playful", "Loyal"], "blurb": "Grandson of the fisherman. Knows every tide and every stray on the coast."}
+  {
+    "id": "sophie", "name": "Sophie", "color": "#f7cfd0", "pet": "kitten_grey",
+    "likes": ["Creative", "Gentle", "Empathetic"],
+    "interests": ["Drawing", "Coffee", "Plants"],
+    "quote": "A kinder tomorrow starts with small moments.",
+    "blurb": "Draws in the window of the flower stall. Wants something small to sit beside the sketchbook."
+  },
+  {
+    "id": "emma", "name": "Emma", "color": "#d5d3e6", "pet": "cat_ginger",
+    "likes": ["Calm", "Thoughtful", "Cozy"],
+    "interests": ["Music", "Books", "Quiet Time"],
+    "quote": "A calm mind is a happy home.",
+    "blurb": "Reads with headphones on for hours. Her flat is warm and far too quiet."
+  },
+  {
+    "id": "mia", "name": "Mia", "color": "#f6d9b6", "pet": "",
+    "likes": ["Outgoing", "Adventurous", "Warm"],
+    "interests": ["Photography", "Travel", "Animals"],
+    "quote": "Collect moments with furry friends.",
+    "blurb": "Photographs every animal she meets. Runs the photo walk in the park."
+  },
+  {
+    "id": "leo", "name": "Leo", "color": "#cfe3c6", "pet": "dog_shiba",
+    "likes": ["Energetic", "Friendly", "Outdoorsy"],
+    "interests": ["Hiking", "Nature", "Sports"],
+    "quote": "Good company makes every journey better.",
+    "blurb": "Out on the trails before sunrise. Keeps looking back for someone who is not there yet."
+  },
+  {
+    "id": "noah", "name": "Noah", "color": "#cfd8e8", "pet": "cat_white",
+    "likes": ["Calm", "Intelligent", "Reliable"],
+    "interests": ["Work", "Reading", "Coffee"],
+    "quote": "A better world for our four-legged friends.",
+    "blurb": "Works late with one hand on the keyboard. The other hand is free."
+  },
+  {
+    "id": "alex", "name": "Alex", "color": "#f7d3cb", "pet": "dog_poodle",
+    "likes": ["Caring", "Gentle", "Positive"],
+    "interests": ["Cooking", "Animals", "Fitness"],
+    "quote": "Happier pets, happier people.",
+    "blurb": "Cooks too much food on purpose. Has been saving a bowl for somebody."
+  }
 ]

@@ -45,6 +45,6 @@ export function BagScreen({ go, game }) {
         button('Go to the shop', () => go('shop'), 'soft', {})], 'head'),
       el('div', { class: 'scroll' }, [el('div', { class: 'col' }, SECTIONS.map(section))]),
     ]),
-    scene: 'home',
+    scene: 'room',
   }
 }

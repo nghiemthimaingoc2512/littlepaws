@@ -22,25 +22,25 @@ npm run dev          # http://localhost:5173
 | --- | --- |
 | `src/state.js` | Every game rule and the save file. Ported from the Godot build's `GameState.gd`, so both behave identically. |
 | `src/data.js` | Loads `../data/*.json` — the same content files the Godot build reads. One source of truth. |
-| `src/art.js` | The pet, the character and the room, drawn as SVG. Image-first: a real PNG wins if one exists. |
+| `src/art.js` | Looks up the uploaded artwork. The only module that touches images. |
 | `src/icons.js` | The icon set, inline SVG. |
 | `src/screens/` | One file per screen. Each builds its DOM and is rebuilt when the save changes. |
-| `tests/interaction.test.mjs` | 66 checks driven through a real browser. |
+| `src/screens/minigame.js` | The tap-game engine behind the three activities. |
+| `tests/interaction.test.mjs` | 77 checks driven through a real browser. |
 
-## Adding real artwork
+## Artwork
 
-The repo's `/assets` folder is served at the site root, so a file dropped in is
-picked up with no code change:
+Every character, pet and background is the uploaded artwork in `/assets`,
+processed into `web/public/art` by `tools/prepare_art.py`. Nothing is drawn in
+code. `src/art.js` is the only module that touches images.
 
-| File | URL the game looks for |
-| --- | --- |
-| `assets/pets/ragdoll.png` | `/pets/ragdoll.png` — used for every pose |
-| `assets/pets/ragdoll_happy.png` | `/pets/ragdoll_happy.png` — used for that pose only |
-| `assets/owner/idle.png` | `/owner/idle.png` |
-| `assets/bg/home.png` | `/bg/home.png` — the room behind the home screen |
+```bash
+pip install pillow numpy scipy
+python3 tools/prepare_art.py     # after changing anything in /assets
+```
 
-Until a file exists, `src/art.js` draws the fallback. Species ids are the keys
-in `data/species.json`.
+The output is committed, so a normal build and CI need no Python. See
+[../docs/ART.md](../docs/ART.md) for what the pipeline does and why.
 
 ## Testing
 

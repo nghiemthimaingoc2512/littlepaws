@@ -47,6 +47,6 @@ export function MissionsScreen({ go, game }) {
         ]),
       ]),
     ]),
-    scene: 'home',
+    scene: 'room',
   }
 }

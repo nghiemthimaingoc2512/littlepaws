@@ -1,6 +1,6 @@
 // Player and pet profile, plus the few settings the game needs.
 import { el, row, card, button, text, pill, icon, meter } from '../ui.js'
-import { ownerNode, creatureNode } from '../art.js'
+import { ownerNode, petNode } from '../art.js'
 import { Data, getSpecies, itemName, rescuableIds } from '../data.js'
 
 let confirming = false
@@ -51,7 +51,7 @@ export function ProfileScreen({ go, game }) {
             button('Open the wardrobe', () => go('shop'), 'soft', {}),
           ], 'grow'),
           card([
-            el('div', { class: 'tile' }, [creatureNode(game.petSpecies(), 'happy'), el('h2', { text: game.petName() })]),
+            el('div', { class: 'tile' }, [petNode(game.petSpecies(), 'art art-pet'), el('h2', { text: game.petName() })]),
             text(`${info.name}  ·  ${game.stageName()}`),
             text(`Together for ${days} day${days === 1 ? '' : 's'}`),
             meter('Bond', game.bond(), 100, '#f2a9b4'),
@@ -64,5 +64,5 @@ export function ProfileScreen({ go, game }) {
   }
 
   draw()
-  return { node: wrap, scene: 'home' }
+  return { node: wrap, scene: 'room' }
 }
