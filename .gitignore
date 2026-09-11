@@ -1,0 +1,15 @@
+# Godot import cache and editor state
+.godot/
+*.translation
+
+# Export output
+build/
+export_presets.cfg
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Web build
+web/node_modules/
+web/dist/
