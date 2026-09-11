@@ -10,7 +10,7 @@ neutral placeholder rather than a redrawing of the subject.
 | --- | --- |
 | `assets/owner/owner.png` | The player character, single portrait, real alpha |
 | `assets/owner/owner_pose.png` | The player character, 5×3 grid of 15 poses |
-| `assets/owner/npc.png` | "Our Human Friends" — one page with six characters and their pets |
+| `assets/owner/npc.png` | "Our Human Friends" — six characters with their pets; Sprint 1 uses only the animals |
 | `assets/bg/bg_room.png` | The apartment, used for the home screen |
 | `assets/bg/bg_mall.png` | The Paw & Co. shopping arcade |
 | `assets/bg/bg_amusement.png` | Little Paws Park |
@@ -31,9 +31,8 @@ pip install pillow numpy scipy
 python3 tools/prepare_art.py
 ```
 
-It reads `/assets` and writes `web/public/art`, plus `assets/manifest.json` for
-the Godot build, so both targets read the same processed files. Roughly 13 MB of
-source becomes about 2.3 MB of sprites.
+It reads `/assets` and writes `web/public/art`, plus `web/src/art-manifest.json`
+for the app to import. Roughly 13 MB of source becomes about 2.3 MB of sprites.
 
 What it does:
 
@@ -56,23 +55,25 @@ normal build and CI need no Python.
 
 | Call | Returns |
 | --- | --- |
-| `ownerNode(pose)` | The player character in one of 15 poses |
-| `petNode(speciesId)` | An animal's round avatar |
-| `friendNode(npcId)` | One of the six friend cards |
-| `sceneUrl(scene)` | A background: `room`, `mall` or `park` |
+| `ownerNode(pose)` | You and your cat, in one of 15 poses |
+| `petNode(petId)` | A pet's round portrait |
+| `sceneUrl(scene)` | A background: `room` or `park` |
 
-The pose the game shows is chosen by what is happening, not fixed: `carePose()`
-maps each care action to a pose, and `moodPose()` maps how your cat is feeling.
+`POSE` maps what is happening — stroking, playing, a treat — to the pose that
+reads for it, so the artwork changes with the moment instead of sitting still.
+
+Sprint 1 does not use the human friend cards or the mall background. They stay
+in `/assets` and in the pipeline output for later.
 
 ## Adding more art
 
 Drop the file into the matching folder under `/assets`, add its crop to
-`tools/prepare_art.py`, and re-run it. Adding a species is a `data/species.json`
-entry plus one avatar under `web/public/art/pets/` named after the species id.
+`tools/prepare_art.py`, and re-run it. Adding a pet is an entry in `web/src/content.js` plus one portrait under
+`web/public/art/pets/` named after its id.
 
 ## The player's cat
 
 No standalone pet artwork was uploaded. The player's calico appears in two of
-the owner poses (`hug` and `pet`), so the home screen shows the real pose art of
-the pair, and her avatar is a round crop of her face from the `pet` pose. The
-five rescuable animals are cropped from the friends page the same way.
+the owner poses (`hug` and `pet`), so Home shows the real pose art of the pair,
+and her portrait is a round crop of her face from the `pet` pose. The four pets
+at the park are cropped from the friends page the same way.

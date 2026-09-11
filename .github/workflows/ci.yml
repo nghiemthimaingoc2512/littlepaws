@@ -33,25 +33,3 @@ jobs:
           npm run preview &
           npx wait-on http://localhost:4173/ --timeout 60000
           GAME_URL=http://localhost:4173/ npm run test
-
-  smoke-test:
-    runs-on: ubuntu-latest
-    env:
-      GODOT_VERSION: 4.4.1
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Godot
-        run: |
-          curl -sSL -o godot.zip \
-            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
-          unzip -q godot.zip
-          chmod +x "Godot_v${GODOT_VERSION}-stable_linux.x86_64"
-          sudo mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" /usr/local/bin/godot
-          godot --headless --version
-
-      - name: Import project
-        run: godot --headless --path . --import
-
-      - name: Run smoke test
-        run: godot --headless --path . res://tests/SmokeTest.tscn

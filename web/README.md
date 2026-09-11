@@ -1,9 +1,6 @@
-# Little Paws — web build
-
-The playable build. Open it in a browser, no engine required.
+# Little Paws — web
 
 ```bash
-cd web
 npm install
 npm run dev          # http://localhost:5173
 ```
@@ -13,50 +10,39 @@ npm run dev          # http://localhost:5173
 | `npm run dev` | Development server with hot reload |
 | `npm run build` | Production build — one self-contained `dist/index.html` |
 | `npm run preview` | Serves the production build on port 4173 |
-| `npm run test` | Drives the running game in Chromium and asserts it is interactive |
-| `npm run artifact` | Builds, then emits `dist/artifact.html` for publishing |
+| `npm test` | Plays the Sprint 1 loop in Chromium |
+| `npm run artifact` | Builds, then emits `dist/artifact.html` with the art inlined |
 
 ## Layout
 
 | Path | What lives there |
 | --- | --- |
-| `src/state.js` | Every game rule and the save file. Ported from the Godot build's `GameState.gd`, so both behave identically. |
-| `src/data.js` | Loads `../data/*.json` — the same content files the Godot build reads. One source of truth. |
-| `src/art.js` | Looks up the uploaded artwork. The only module that touches images. |
-| `src/icons.js` | The icon set, inline SVG. |
-| `src/screens/` | One file per screen. Each builds its DOM and is rebuilt when the save changes. |
-| `src/screens/minigame.js` | The tap-game engine behind the three activities. |
-| `tests/interaction.test.mjs` | 77 checks driven through a real browser. |
+| `src/state.js` | The whole save and every rule |
+| `src/content.js` | The five pets |
+| `src/art.js` | Artwork lookup — the only module that touches images |
+| `src/screens/` | One file per screen: onboarding, home, play, park, pets, memories |
+| `src/fonts.css` | Baloo 2 + Nunito, inlined so the game needs no network |
+| `tests/interaction.test.mjs` | The Definition of Done, checked in a browser |
 
 ## Artwork
 
-Every character, pet and background is the uploaded artwork in `/assets`,
-processed into `web/public/art` by `tools/prepare_art.py`. Nothing is drawn in
-code. `src/art.js` is the only module that touches images.
+Every character, pet and background is the uploaded artwork in `../assets`,
+processed into `public/art` by `tools/prepare_art.py`.
 
 ```bash
 pip install pillow numpy scipy
-python3 tools/prepare_art.py     # after changing anything in /assets
+python3 ../tools/prepare_art.py     # after changing anything in ../assets
 ```
 
-The output is committed, so a normal build and CI need no Python. See
-[../docs/ART.md](../docs/ART.md) for what the pipeline does and why.
+The output is committed, so a normal build and CI need no Python.
 
-## Testing
-
-The interaction suite needs a browser and a running server:
+## Tests
 
 ```bash
 npx playwright install chromium   # once
 npm run dev &
-npm run test                      # against the dev server
-GAME_URL=http://localhost:4173/ npm run test   # against the production build
+npm test                          # against the dev server
+GAME_URL=http://localhost:4173/ npm test   # against the production build
 ```
 
 Set `CHROMIUM_PATH` to use a Chromium you already have instead of Playwright's.
-
-It plays the game: finishes onboarding, opens and closes the care sheet, feeds
-and plays and checks the meters and counters moved, ticks off a daily task and
-collects it, visits all six tabs and all four shortcuts, buys and wears an
-accessory, completes a rescue mission, tames and re-homes the animal, collects
-a gift from the inbox, and reloads to confirm the save survived.

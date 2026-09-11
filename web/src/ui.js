@@ -1,5 +1,5 @@
-// Tiny DOM helpers. No framework: screens build their tree and are rebuilt
-// whenever the save changes, so state and view cannot drift apart.
+// Small DOM helpers. No framework: a screen builds its tree, and is rebuilt
+// when the save changes.
 import { icon } from './icons.js'
 
 export function el(tag, props = {}, children = []) {
@@ -24,38 +24,18 @@ export function el(tag, props = {}, children = []) {
 export const row = (children, cls = '') => el('div', { class: `row ${cls}`.trim() }, children)
 export const col = (children, cls = '') => el('div', { class: `col ${cls}`.trim() }, children)
 export const card = (children, cls = '') => el('div', { class: `card ${cls}`.trim() }, children)
-export const grow = () => el('div', { class: 'grow' })
-export const text = (value, cls = 'muted') => el('p', { class: cls, text: value })
-export const pill = (label, cls = '') => el('span', { class: `pill ${cls}`.trim() }, [label])
+export const text = (value) => el('p', { text: value })
 
 export function button(label, onClick, cls = '', opts = {}) {
   const node = el('button', { class: cls, onClick, disabled: opts.disabled })
   if (opts.icon) node.append(icon(opts.icon))
-  node.append(document.createTextNode(label))
+  if (label) node.append(document.createTextNode(label))
+  if (opts.id) node.id = opts.id
+  if (opts.label) node.setAttribute('aria-label', opts.label)
   return node
 }
 
-export function iconButton(name, onClick, cls = 'round-btn', badge = 0) {
-  const node = el('button', { class: cls, onClick, 'aria-label': name }, [icon(name)])
-  if (badge > 0) node.append(el('span', { class: 'dot', text: String(badge) }))
-  else if (badge < 0) node.append(el('span', { class: 'dot', text: '' }))
-  return node
-}
-
-/** A labelled meter. Returns the element with a `set(value)` method. */
-export function meter(label, value, max, color, opts = {}) {
-  const fill = el('div', { class: 'meter-fill', style: { background: color } })
-  const amount = el('span', { text: opts.hideValue ? '' : String(Math.round(value)) })
-  const node = el('div', { class: 'meter' }, [
-    el('div', { class: 'meter-top' }, [el('span', { text: label }), amount]),
-    el('div', { class: 'meter-track' }, [fill]),
-  ])
-  node.set = (next) => {
-    fill.style.width = `${Math.max(0, Math.min(1, next / max)) * 100}%`
-    if (!opts.hideValue) amount.textContent = String(Math.round(next))
-  }
-  node.set(value)
-  return node
-}
+export const roundButton = (iconName, onClick, opts = {}) =>
+  button('', onClick, 'btn-round', { icon: iconName, ...opts })
 
 export { icon }
